@@ -1,6 +1,6 @@
 import numpy as np
-from selfdrive.can.parser import CANParser
-from selfdrive.can.can_define import CANDefine
+from opendbc.can.parser import CANParser
+from opendbc.can.can_define import CANDefine
 from selfdrive.config import Conversions as CV
 from selfdrive.car.landrover.values import DBC, STEER_THRESHOLD
 from common.kalman.simple_kalman import KF1D
