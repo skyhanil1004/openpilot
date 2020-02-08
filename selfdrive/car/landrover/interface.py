@@ -66,8 +66,8 @@ class CarInterface():
     # ret.lateralTuning.pid.kpBP, ret.lateralTuning.pid.kiBP = [[9., 20.], [9., 20.]]
     ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
     # ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15,0.30], [0.03,0.05]]
-    ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15], [0.03]]
-    ret.lateralTuning.pid.kf = 0.00000   # full torque for 10 deg at 80mph means 0.00007818594
+    ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.099], [0.03]]
+    ret.lateralTuning.pid.kf = 0.00005   # full torque for 10 deg at 80mph means 0.00007818594
     ret.steerActuatorDelay = 0.025       # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.05 then good straight
     ret.steerRateCost = 0.5              # org 0.7
 
