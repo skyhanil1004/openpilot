@@ -1,6 +1,8 @@
 from cereal import car
 from selfdrive.car.landrover.lkas_tbl import find_steer_torq
 from selfdrive.car import make_can_msg
+import binascii
+import codecs
 
 # 15 all green
 # 1d left green, right white

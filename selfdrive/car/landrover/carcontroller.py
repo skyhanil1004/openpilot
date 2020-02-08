@@ -2,7 +2,7 @@ from cereal import car
 from selfdrive.car import apply_toyota_steer_torque_limits
 from selfdrive.car.landrover.landrovercan import create_lkas_command, make_can_msg, create_lkas_hud
 from selfdrive.car.landrover.values import ECU, CAR, STATIC_MSGS, SteerLimitParams
-from selfdrive.can.packer import CANPacker
+from opendbc.can.packer import CANPacker
 from selfdrive.swaglog import cloudlog
 
 
