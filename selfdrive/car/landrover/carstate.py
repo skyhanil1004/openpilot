@@ -168,6 +168,7 @@ class CarState():
     self.steer_torque_motor = (cp.vl["EPS_04"]["STEER_TORQUE_EPS04"])
     
     self.steer_override = abs(self.steer_torque_driver) > STEER_THRESHOLD
+    # self.steer_override = False # abs(self.steer_torque_driver) > STEER_THRESHOLD
     steer_state = 1 #cp.vl[""]["LKAS_STATE"]
     self.steer_error = steer_state == 4 or (steer_state == 0 and self.v_ego > self.CP.minSteerSpeed)
 

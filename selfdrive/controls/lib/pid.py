@@ -36,7 +36,8 @@ class PIController():
     return interp(self.speed, self._k_i[0], self._k_i[1])
 
   def _check_saturation(self, control, check_saturation, error):
-    saturated = (control < self.neg_limit) or (control > self.pos_limit)
+    # saturated = (control < self.neg_limit) or (control > self.pos_limit)
+    saturated = False  # (control < self.neg_limit) or (control > self.pos_limit)    #modify by HANIL
 
     if saturated and check_saturation and abs(error) > 0.1:
       self.sat_count += self.sat_count_rate
