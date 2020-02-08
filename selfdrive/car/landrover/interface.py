@@ -58,7 +58,8 @@ class CarInterface():
 
     # Speed conversion:              20, 45 mph
     ret.wheelbase = 2.922  # in meters for rangerover vogue  2017
-    ret.steerRatio = 15.2 # Pacifica Hybrid 2017 is 16.2
+    # ret.steerRatio = 15.2 # Pacifica Hybrid 2017 is 16.2
+    ret.steerRatio = 11.2 # Pacifica Hybrid 2017 is 16.2
     ret.mass = 2500. + STD_CARGO_KG  # kg curb weight Pacifica Hybrid 2017
     tire_stiffness_factor = 0.5371   # hand-tun
 
@@ -66,7 +67,7 @@ class CarInterface():
     ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
     # ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15,0.30], [0.03,0.05]]
     ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15], [0.03]]
-    ret.lateralTuning.pid.kf = 0.00005   # full torque for 10 deg at 80mph means 0.00007818594
+    ret.lateralTuning.pid.kf = 0.00000   # full torque for 10 deg at 80mph means 0.00007818594
     ret.steerActuatorDelay = 0.025       # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.05 then good straight
     ret.steerRateCost = 0.5              # org 0.7
 
