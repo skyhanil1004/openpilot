@@ -72,8 +72,8 @@ class CarController():
     
     # cloudlog.warning("LKAS aplly_steer[%d] - %d", apply_steer, actuators.steer)
     
-    if not enabled or CS.left_blinker_on or CS.right_blinker_on:
-      apply_steer = 0
+    # if not enabled or CS.left_blinker_on or CS.right_blinker_on:
+    #   apply_steer = 0
 
     self.apply_steer_last = apply_steer
 
