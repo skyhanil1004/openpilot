@@ -147,13 +147,16 @@ class PathPlanner():
     else:
       self.steerRatio = self.sR[0]
       
-    print("steerRatio = ", self.steerRatio)
+    # print("steerRatio = ", self.steerRatio)
 
     self.LP.parse_model(sm['model'])
 
     # Lane change logic
     lane_change_direction = LaneChangeDirection.none
     one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
+
+    # self.leftLaneAlert = sm['carState'].lefAlert
+    # self.rightLaneAlert = sm['carState'].righfAlert
 
     if not active or self.lane_change_timer > 10.0:
       self.lane_change_state = LaneChangeState.off
@@ -167,6 +170,10 @@ class PathPlanner():
         self.pre_lane_change_timer += DT_MDL
       else:
         self.pre_lane_change_timer = 0.0
+
+      # add by HANIL if left or right ALERT then timer reset  
+      # if self.leftLaneAlert or self.rightLaneAlert:
+      #   self.pre_lane_change_timer = 0.0
 
       if self.alc_nudge_less and self.pre_lane_change_timer > self.alc_timer:
         torque_applied = True

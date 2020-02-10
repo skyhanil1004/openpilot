@@ -45,7 +45,6 @@ def add_lane_change_event(events, path_plan):
   elif path_plan.laneChangeState in [LaneChangeState.laneChangeStarting, LaneChangeState.laneChangeFinishing]:
       events.append(create_event('laneChange', [ET.WARNING]))
 
-
 def isActive(state):
   """Check if the actuators are enabled"""
   return state in [State.enabled, State.softDisabling]

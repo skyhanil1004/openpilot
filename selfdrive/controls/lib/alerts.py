@@ -268,6 +268,7 @@ ALERTS = [
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.steerRequired, AudibleAlert.none, .0, .1, .1),
 
+
   Alert(
       "posenetInvalid",
       "TAKE CONTROL",

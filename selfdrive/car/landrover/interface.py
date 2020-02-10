@@ -222,6 +222,9 @@ class CarInterface():
     ret.leftBlinker = bool(self.CS.left_blinker_on)
     ret.rightBlinker = bool(self.CS.right_blinker_on)
 
+    # ret.leftAlert = bool(self.CS.left_alert)
+    # ret.rightAlert = bool(self.CS.right_alert)
+
     ret.doorOpen = not self.CS.door_all_closed
     ret.seatbeltUnlatched = not self.CS.seatbelt
     self.low_speed_alert = (ret.vEgo < self.CP.minSteerSpeed)
