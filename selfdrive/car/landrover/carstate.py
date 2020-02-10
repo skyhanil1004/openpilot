@@ -43,10 +43,10 @@ def get_can_parser(CP):
     ("COUNTER", "LKAS_RUN", -1),
     ("SPEED01", "SPEED_01", 0),
     ("SPEED02", "SPEED_02", 0),
-    # ("LEFT_ALERT_1", "LEFT_MIRROR_ALERT", 0),
-    # ("LEFT_ALERT_2", "LEFT_MIRROR_ALERT", 0),
-    # ("RIGHT_ALERT_1", "RIGHT_MIRROR_ALERT", 0),
-    # ("RIGHT_ALERT_2", "RIGHT_MIRROR_ALERT", 0),
+    ("LEFT_ALERT_1", "LEFT_ALERT", 0),
+    ("LEFT_ALERT_2", "LEFT__ALERT", 0),
+    ("RIGHT_ALERT_1", "RIGHT_ALERT", 0),
+    ("RIGHT_ALERT_2", "RIGHT_ALERT", 0),
     ("WHEEL_SPEED_FR", "SPEED_04", 0),
     ("WHEEL_SPEED_FL", "SPEED_04", 0),
     ("WHEEL_SPEED_RR", "SPEED_03", 0),
@@ -95,8 +95,8 @@ class CarState():
     # self.can_define = CANDefine(DBC[CP.carFingerprint]['pt'])
     self.left_blinker_on = 0
     self.right_blinker_on = 0
-    # self.left_alert = 0
-    # self.right_alert = 0
+    self.left_alert = 0
+    self.right_alert = 0
     
     self.angle_steers = 0.0
 
@@ -170,8 +170,8 @@ class CarState():
     self.left_blinker_on = cp.vl["TURN_SIGNAL"]['LEFT_TURN']
     self.right_blinker_on = cp.vl["TURN_SIGNAL"]['RIGHT_TURN']
 
-    # self.left_alert = bool(cp.vl["LEFT_MIRROR_ALERT"]['LEFT_ALERT_1'])
-    # self.right_alert = bool(cp.vl["RIGHT_MIRROR_ALERT"]['RIGHT_ALERT_1'])
+    self.left_alert = bool(cp.vl["LEFT_ALERT"]['LEFT_ALERT_1']) && bool(cp.vl["LEFT_ALERT"]['LEFT_ALERT_2'])
+    self.right_alert = bool(cp.vl["RIGHT_ALERT"]['RIGHT_ALERT_1']) && bool(cp.vl["RIGHT_ALERT"]['RIGHT_ALERT_2'])
 
     self.steer_torque_driver = cp.vl["EPS_03"]["STEER_TORQUE_DRIVER03"]
     self.steer_torque_motor = cp.vl["EPS_04"]["STEER_TORQUE_EPS04"]

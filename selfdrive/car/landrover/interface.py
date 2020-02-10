@@ -66,8 +66,8 @@ class CarInterface():
     # ret.lateralTuning.pid.kpBP, ret.lateralTuning.pid.kiBP = [[9., 20.], [9., 20.]]
     ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
     # ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.15,0.30], [0.03,0.05]]
-    ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.099], [0.03]]
-    ret.lateralTuning.pid.kf = 0.00005   # full torque for 10 deg at 80mph means 0.00007818594
+    ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.05], [0.007]]
+    ret.lateralTuning.pid.kf = 0.00000   # full torque for 10 deg at 80mph means 0.00007818594
     ret.steerActuatorDelay = 0.025       # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.05 then good straight
     ret.steerRateCost = 0.5              # org 0.7
 
@@ -208,13 +208,15 @@ class CarInterface():
 
     if self.CS.left_blinker_on != self.CS.prev_left_blinker_on:
       be = car.CarState.ButtonEvent.new_message()
-      be.type = 'leftBlinker'
+      # be.type = 'leftBlinker'
+      be.type = ButtonType.leftBlinker
       be.pressed = self.CS.left_blinker_on != 0
       buttonEvents.append(be)
 
     if self.CS.right_blinker_on != self.CS.prev_right_blinker_on:
       be = car.CarState.ButtonEvent.new_message()
-      be.type = 'rightBlinker'
+      # be.type = 'rightBlinker'
+      be.type = ButtonType.rightBlinker
       be.pressed = self.CS.right_blinker_on != 0
       buttonEvents.append(be)
 
@@ -222,8 +224,8 @@ class CarInterface():
     ret.leftBlinker = bool(self.CS.left_blinker_on)
     ret.rightBlinker = bool(self.CS.right_blinker_on)
 
-    # ret.leftAlert = bool(self.CS.left_alert)
-    # ret.rightAlert = bool(self.CS.right_alert)
+    ret.leftAlert = bool(self.CS.left_alert)
+    ret.rightAlert = bool(self.CS.right_alert)
 
     ret.doorOpen = not self.CS.door_all_closed
     ret.seatbeltUnlatched = not self.CS.seatbelt
