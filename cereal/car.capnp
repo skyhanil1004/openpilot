@@ -91,6 +91,8 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     carUnrecognized @66;
     radarCommIssue @67;
     driverMonitorLowAcc @68;
+    leftAlert @69;
+    rightAlert @70;
   }
 }
 
@@ -127,6 +129,8 @@ struct CarState {
   steeringRateLimited @29 :Bool;    # if the torque is limited by the rate limiter
   stockAeb @30 :Bool;
   stockFcw @31 :Bool;
+  leftAlert @32 :Bool;
+  rightAlert @33 :Bool;
 
   # cruise state
   cruiseState @10 :CruiseState;
@@ -440,7 +444,7 @@ struct CarParams {
     gmAscm @18;
     noOutput @19;  # like silent but without silent CAN TXs
     hondaBoschHarness @20;
-    volkswagenPq @21;
+    landrover @21;
   }
 
   enum SteerControlType {

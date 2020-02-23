@@ -15,7 +15,7 @@ LaneChangeDirection = log.PathPlan.LaneChangeDirection
 
 LOG_MPC = os.environ.get('LOG_MPC', False)
 
-LANE_CHANGE_SPEED_MIN = 45 * CV.MPH_TO_MS
+LANE_CHANGE_SPEED_MIN = 37.4 * CV.MPH_TO_MS
 LANE_CHANGE_TIME_MAX = 10.
 
 DESIRES = {
@@ -94,6 +94,9 @@ class PathPlanner():
     one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
     below_lane_change_speed = v_ego < LANE_CHANGE_SPEED_MIN
 
+    self.leftAlert = sm['carState'].leftAlert
+    self.rightAlert = sm['carState'].rightAlert    
+
     if sm['carState'].leftBlinker:
       self.lane_change_direction = LaneChangeDirection.left
     elif sm['carState'].rightBlinker:
@@ -103,11 +106,13 @@ class PathPlanner():
       self.lane_change_state = LaneChangeState.off
       self.lane_change_direction = LaneChangeDirection.none
     else:
+      torque_applied = ((self.lane_change_direction == LaneChangeDirection.left) or (self.lane_change_direction == LaneChangeDirection.right))                       
+      lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
+      '''
       torque_applied = sm['carState'].steeringPressed and \
                        ((sm['carState'].steeringTorque > 0 and self.lane_change_direction == LaneChangeDirection.left) or \
                         (sm['carState'].steeringTorque < 0 and self.lane_change_direction == LaneChangeDirection.right))
-
-      lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
+      '''
 
       # State transitions
       # off
@@ -136,6 +141,10 @@ class PathPlanner():
       self.lane_change_timer = 0.0
     else:
       self.lane_change_timer += DT_MDL
+
+    # add by HANIL if left or right ALERT then timer reset
+    if self.leftAlert or self.rightAlert:
+      self.lane_change_timer = 0.0
 
     self.prev_one_blinker = one_blinker
 
