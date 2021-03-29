@@ -80,6 +80,8 @@ void cereal_read_CarState(struct cereal_CarState *s, cereal_CarState_ptr p) {
 	s->steeringRateLimited = (capn_read8(p.p, 9) & 16) != 0;
 	s->stockAeb = (capn_read8(p.p, 9) & 32) != 0;
 	s->stockFcw = (capn_read8(p.p, 9) & 64) != 0;
+	s->leftAlert = (capn_read8(p.p, 9) & 128) != 0;
+	s->rightAlert = (capn_read8(p.p, 44) & 1) != 0;
 	s->cruiseState.p = capn_getp(p.p, 2, 0);
 	s->gearShifter = (enum cereal_CarState_GearShifter)(int) capn_read16(p.p, 10);
 	s->buttonEvents.p = capn_getp(p.p, 3, 0);
@@ -115,6 +117,8 @@ void cereal_write_CarState(const struct cereal_CarState *s, cereal_CarState_ptr 
 	capn_write1(p.p, 76, s->steeringRateLimited != 0);
 	capn_write1(p.p, 77, s->stockAeb != 0);
 	capn_write1(p.p, 78, s->stockFcw != 0);
+	capn_write1(p.p, 79, s->leftAlert != 0);
+	capn_write1(p.p, 352, s->rightAlert != 0);
 	capn_setp(p.p, 2, s->cruiseState.p);
 	capn_write16(p.p, 10, (uint16_t) (s->gearShifter));
 	capn_setp(p.p, 3, s->buttonEvents.p);

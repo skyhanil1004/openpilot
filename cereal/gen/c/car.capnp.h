@@ -140,7 +140,9 @@ enum cereal_CarEvent_EventName {
 	cereal_CarEvent_EventName_ldw = 65,
 	cereal_CarEvent_EventName_carUnrecognized = 66,
 	cereal_CarEvent_EventName_radarCommIssue = 67,
-	cereal_CarEvent_EventName_driverMonitorLowAcc = 68
+	cereal_CarEvent_EventName_driverMonitorLowAcc = 68,
+	cereal_CarEvent_EventName_leftAlert = 69,
+	cereal_CarEvent_EventName_rightAlert = 70
 };
 
 enum cereal_CarState_GearShifter {
@@ -221,7 +223,7 @@ enum cereal_CarParams_SafetyModel {
 	cereal_CarParams_SafetyModel_gmAscm = 18,
 	cereal_CarParams_SafetyModel_noOutput = 19,
 	cereal_CarParams_SafetyModel_hondaBoschHarness = 20,
-	cereal_CarParams_SafetyModel_volkswagenPq = 21
+	cereal_CarParams_SafetyModel_landrover = 21
 };
 
 enum cereal_CarParams_SteerControlType {
@@ -292,6 +294,8 @@ struct cereal_CarState {
 	unsigned steeringRateLimited : 1;
 	unsigned stockAeb : 1;
 	unsigned stockFcw : 1;
+	unsigned leftAlert : 1;
+	unsigned rightAlert : 1;
 	cereal_CarState_CruiseState_ptr cruiseState;
 	enum cereal_CarState_GearShifter gearShifter;
 	cereal_CarState_ButtonEvent_list buttonEvents;

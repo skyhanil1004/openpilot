@@ -86,6 +86,8 @@ enum class EventName_baa8c5d505f727de: uint16_t {
   CAR_UNRECOGNIZED,
   RADAR_COMM_ISSUE,
   DRIVER_MONITOR_LOW_ACC,
+  LEFT_ALERT,
+  RIGHT_ALERT,
 };
 CAPNP_DECLARE_ENUM(EventName, baa8c5d505f727de);
 CAPNP_DECLARE_SCHEMA(9da4fa09e052903c);
@@ -188,7 +190,7 @@ enum class SafetyModel_95551e5b1edaf451: uint16_t {
   GM_ASCM,
   NO_OUTPUT,
   HONDA_BOSCH_HARNESS,
-  VOLKSWAGEN_PQ,
+  LANDROVER,
 };
 CAPNP_DECLARE_ENUM(SafetyModel, 95551e5b1edaf451);
 CAPNP_DECLARE_SCHEMA(d661512be2def77f);
@@ -762,6 +764,10 @@ public:
 
   inline bool getStockFcw() const;
 
+  inline bool getLeftAlert() const;
+
+  inline bool getRightAlert() const;
+
 private:
   ::capnp::_::StructReader _reader;
   template <typename, ::capnp::Kind>
@@ -911,6 +917,12 @@ public:
 
   inline bool getStockFcw();
   inline void setStockFcw(bool value);
+
+  inline bool getLeftAlert();
+  inline void setLeftAlert(bool value);
+
+  inline bool getRightAlert();
+  inline void setRightAlert(bool value);
 
 private:
   ::capnp::_::StructBuilder _builder;
@@ -3728,6 +3740,34 @@ inline bool CarState::Builder::getStockFcw() {
 inline void CarState::Builder::setStockFcw(bool value) {
   _builder.setDataField<bool>(
       ::capnp::bounded<78>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool CarState::Reader::getLeftAlert() const {
+  return _reader.getDataField<bool>(
+      ::capnp::bounded<79>() * ::capnp::ELEMENTS);
+}
+
+inline bool CarState::Builder::getLeftAlert() {
+  return _builder.getDataField<bool>(
+      ::capnp::bounded<79>() * ::capnp::ELEMENTS);
+}
+inline void CarState::Builder::setLeftAlert(bool value) {
+  _builder.setDataField<bool>(
+      ::capnp::bounded<79>() * ::capnp::ELEMENTS, value);
+}
+
+inline bool CarState::Reader::getRightAlert() const {
+  return _reader.getDataField<bool>(
+      ::capnp::bounded<352>() * ::capnp::ELEMENTS);
+}
+
+inline bool CarState::Builder::getRightAlert() {
+  return _builder.getDataField<bool>(
+      ::capnp::bounded<352>() * ::capnp::ELEMENTS);
+}
+inline void CarState::Builder::setRightAlert(bool value) {
+  _builder.setDataField<bool>(
+      ::capnp::bounded<352>() * ::capnp::ELEMENTS, value);
 }
 
 inline float CarState::WheelSpeeds::Reader::getFl() const {
