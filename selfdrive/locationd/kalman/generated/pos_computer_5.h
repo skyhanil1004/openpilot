@@ -5,7 +5,7 @@
  *                                                                            *
  *                         This file is part of 'ekf'                         *
  ******************************************************************************/
-void res_fun(double *abr, double *poses, double *img_positions, double *out_6971871803917030646);
-void jac_fun(double *abr, double *poses, double *img_positions, double *out_6921046667506694430);
+void res_fun(double *abr, double *poses, double *img_positions, double *out_5106097921816428404);
+void jac_fun(double *abr, double *poses, double *img_positions, double *out_5209794335739704952);
     void compute_pos(double *to_c, double *in_poses, double *in_img_positions, double *param, double *pos);
     
