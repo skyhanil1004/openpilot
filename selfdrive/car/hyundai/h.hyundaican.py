@@ -27,8 +27,8 @@ def create_lkas_ka4(packer, frame, apply_steer, steer_req,
   values["TORQUE_REQUEST"] = apply_steer
   values["STEER_REQ"] = steer_req
 
+  values["LKAS_lane"] = int(left_lane) + (int(right_lane) << 1)
   #values["LDW_STATUS"] = 2   # ??
-  #values["LKAS_lane"] = 3
   #values["LKAS_undef02"] = 1
   #values["LKAS_undef03"] = 1
   #values["LKAS_undef04"] = 1
@@ -46,7 +46,7 @@ def create_adas_status_ka4(packer,  adas_ka4, enabled, frame):
   values = adas_ka4
   values["CHECKSUM"]  = 0
   values["COUNTER"] =  frame % 255
-  values["ADAS_COLOR"] = 2 if enabled else 0
+  values["ADAS_COLOR"] = 2 if enabled else 1
 
   msg = packer.make_can_msg("ADAS_STATUS", 4, values)
 

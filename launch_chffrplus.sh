@@ -1,5 +1,8 @@
 #!/usr/bin/bash
 
+export FINGERPRINT="KIA CARNIVAL KA4 2022"
+export PASSIVE="0"
+
 if [ -z "$BASEDIR" ]; then
   BASEDIR="/data/openpilot"
 fi

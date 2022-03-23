@@ -15,7 +15,7 @@ def get_can_parser_ev6(CP):
     ("WHEEL_SPEED_4", "WHEEL_SPEEDS"),
 
     ("ACCELERATOR_PEDAL", "ACCELERATOR"),
-#    ("SHIFTER", "GEAR"),
+    ("SHIFTER", "GEAR_PRND"),
     ("GEAR", "ACCELERATOR"),
     ("BRAKE_PRESSED", "BRAKE"),
 
@@ -38,7 +38,6 @@ def get_can_parser_ev6(CP):
   checks = [
     ("WHEEL_SPEEDS", 0),
     ("ACCELERATOR", 0),
-    ("GEAR", 0),
     ("BRAKE", 0),
     ("STEERING_SENSORS", 0),
     ("STEERING_SENSORS_ALT", 0),
@@ -57,17 +56,20 @@ def get_can_parser_ev6(CP):
 def get_cam_can_parser_ev6(CP):
     signals = [
       # sig_name, sig_address
+      ("checksum", "LKAS_KA4"),
+      ("counter", "LKAS_KA4"),
       ("LDW_STATUS", "LKAS_KA4"),
-      ("LKAS_lane", "LKAS_KA4"),
-      ("LKAS_undef02", "LKAS_KA4"),
-      ("LKAS_undef03", "LKAS_KA4"),
-      ("LKAS_undef04", "LKAS_KA4"),
-      ("ADAS_undef01", "ADAS_STATUS"),
+      ("NEW_SIGNAL_1", "LKAS_KA4"),
+      ("NEW_SIGNAL_2", "LKAS_KA4"),
+      ("NEW_SIGNAL_3", "LKAS_KA4"),
+      ("NEW_SIGNAL_4", "LKAS_KA4"),
+      ("TORQ_REQ", "LKAS_KA4"),
+      ("TORQ_REQ_VAL", "LKAS_KA4"),
+      ("LDW_STATUS", "LKAS_KA4"),
     ]
 
     checks = [
-      ("LKAS_KA4", 100),
-      ("ADAS_STATUS", 100)
+      ("LKAS_KA4", 1)
     ]
 
 
@@ -80,7 +82,7 @@ class CarState(CarStateBase):
     can_define = CANDefine(DBC[CP.carFingerprint]["pt"])
 
     if CP.carFingerprint in HDA2_CAR:
-      #self.shifter_values = can_define.dv["GEAR"]["SHIFTER"]
+      #self.shifter_values = can_define.dv["GEAR_PRND"]["SHIFTER"]
       self.shifter_values = can_define.dv["ACCELERATOR"]["GEAR"]
     elif self.CP.carFingerprint in FEATURES["use_cluster_gears"]:
       self.shifter_values = can_define.dv["CLU15"]["CF_Clu_Gear"]
@@ -102,9 +104,7 @@ class CarState(CarStateBase):
     ret.doorOpen = cp.vl["DOORS_SEATBELTS"]["DRIVER_DOOR_OPEN"] == 1
     ret.seatbeltUnlatched = cp.vl["DOORS_SEATBELTS"]["DRIVER_SEATBELT_LATCHED"] == 0
 
-    #gear = cp.vl["GEAR"]["SHIFTER"]
-    gear = cp.vl["ACCELERATOR"]["GEAR"]
-
+    gear = cp.vl["GEAR"]["SHIFTER"]
     ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(gear))
 
     # TODO: figure out positions
@@ -134,7 +134,6 @@ class CarState(CarStateBase):
     ret.cruiseState.speed = cp.vl["CRUISE_INFO"]["SET_SPEED"] * speed_conv
 
     self.lkas_ka4 = copy.copy(cp_cam.vl["LKAS_KA4"])
-    self.adas_status = copy.copy(cp_cam.vl["ADAS_STATUS"])
 
     return ret
 

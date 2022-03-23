@@ -1,61 +1,7 @@
 import crcmod
-import struct
-
 from selfdrive.car.hyundai.values import CAR, CHECKSUM
 
 hyundai_checksum = crcmod.mkCrcFun(0x11D, initCrc=0xFD, rev=False, xorOut=0xdf)
-
-def egmp_crc_org(msg):
-  xor_out = {8: 0x5f29, 16: 0x041d, 24: 0x819d, 32: 0x9f5b}[len(msg.dat)]
-  fun = crcmod.mkCrcFun(0x11021, rev=False, initCrc=xor_out, xorOut=xor_out)
-  dat = msg.dat[2:] + struct.pack('<H', msg.address)
-  return struct.pack('<H', fun(dat))
-
-def egmp_crc(msg):
-  xor_out = {8: 0x5f29, 16: 0x041d, 24: 0x819d, 32: 0x9f5b}[len(msg[2])]
-  fun = crcmod.mkCrcFun(0x11021, rev=False, initCrc=xor_out, xorOut=xor_out)
-  dat = msg[2][2:] + struct.pack('<H', msg[0])
-  return struct.pack('<H', fun(dat))
-
-def create_lkas_ka4(packer, frame, apply_steer, steer_req,
-                    lkas_ka4, sys_warning, sys_state, enabled,
-                    left_lane, right_lane,
-                    left_lane_depart, right_lane_depart):
-  values = lkas_ka4
-  values["CHECKSUM"] = 0
-  values["COUNTER"] = frame % 255
-  values["TORQUE_REQUEST"] = apply_steer
-  values["STEER_REQ"] = steer_req
-
-  #values["LDW_STATUS"] = 2   # ??
-  #values["LKAS_lane"] = 3
-  #values["LKAS_undef02"] = 1
-  #values["LKAS_undef03"] = 1
-  #values["LKAS_undef04"] = 1
-
-
-  msg = packer.make_can_msg("LKAS_KA4", 4, values)
-
-  checksum = egmp_crc(msg)
-
-  values["CHECKSUM"] = int.from_bytes(checksum, 'little')
-
-  return  packer.make_can_msg("LKAS_KA4", 4, values)
-
-def create_adas_status_ka4(packer,  adas_ka4, enabled, frame):
-  values = adas_ka4
-  values["CHECKSUM"]  = 0
-  values["COUNTER"] =  frame % 255
-  values["ADAS_COLOR"] = 2 if enabled else 0
-
-  msg = packer.make_can_msg("ADAS_STATUS", 4, values)
-
-  checksum = egmp_crc(msg)
-  values["CHECKSUM"] = int.from_bytes(checksum, 'little')
-
-  return packer.make_can_msg("ADAS_STATUS", 4, values)
-
-
 
 def create_lkas11(packer, frame, car_fingerprint, apply_steer, steer_req,
                   lkas11, sys_warning, sys_state, enabled,
@@ -132,7 +78,7 @@ def create_lfahda_mfc(packer, enabled, hda_set_speed=0):
   }
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 
-def create_acc_commands(packer, enabled, accel, jerk, idx, lead_visible, set_speed, stopping):
+def create_acc_commands(packer, enabled, accel, jerk, idx, lead_visible, set_speed, stopping, gas_pressed):
   commands = []
 
   scc11_values = {
@@ -149,7 +95,7 @@ def create_acc_commands(packer, enabled, accel, jerk, idx, lead_visible, set_spe
   commands.append(packer.make_can_msg("SCC11", 0, scc11_values))
 
   scc12_values = {
-    "ACCMode": 1 if enabled else 0,
+    "ACCMode": 2 if enabled and gas_pressed else 1 if enabled else 0,
     "StopReq": 1 if enabled and stopping else 0,
     "aReqRaw": accel if enabled else 0,
     "aReqValue": accel if enabled else 0, # stock ramps up and down respecting jerk limit until it reaches aReqRaw
@@ -165,7 +111,7 @@ def create_acc_commands(packer, enabled, accel, jerk, idx, lead_visible, set_spe
     "ComfortBandLower": 0.0, # stock usually is 0 but sometimes uses higher values
     "JerkUpperLimit": max(jerk, 1.0) if (enabled and not stopping) else 0, # stock usually is 1.0 but sometimes uses higher values
     "JerkLowerLimit": max(-jerk, 1.0) if enabled else 0, # stock usually is 0.5 but sometimes uses higher values
-    "ACCMode": 1 if enabled else 4, # stock will always be 4 instead of 0 after first disengage
+    "ACCMode": 2 if enabled and gas_pressed else 1 if enabled else 4, # stock will always be 4 instead of 0 after first disengage
     "ObjGap": 2 if lead_visible else 0, # 5: >30, m, 4: 25-30 m, 3: 20-25 m, 2: < 20 m, 0: no lead
   }
   commands.append(packer.make_can_msg("SCC14", 0, scc14_values))

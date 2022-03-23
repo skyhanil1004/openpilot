@@ -317,14 +317,16 @@ def handle_neos_update(wait_helper: WaitTimeHelper) -> None:
 
 def check_git_fetch_result(fetch_txt: str) -> bool:
   err_msg = "Failed to add the host to the list of known hosts (/data/data/com.termux/files/home/.ssh/known_hosts).\n"
-  return len(fetch_txt) > 0 and (fetch_txt != err_msg)
+  #return len(fetch_txt) > 0 and (fetch_txt != err_msg)
+  return False
 
 
 def check_for_update() -> Tuple[bool, bool]:
   setup_git_options(OVERLAY_MERGED)
   try:
     git_fetch_output = run(["git", "fetch", "--dry-run"], OVERLAY_MERGED, low_priority=True)
-    return True, check_git_fetch_result(git_fetch_output)
+    #return True, check_git_fetch_result(git_fetch_output)
+    return True, False
   except subprocess.CalledProcessError:
     return False, False
 
@@ -339,7 +341,8 @@ def fetch_update(wait_helper: WaitTimeHelper) -> bool:
 
   cur_hash = run(["git", "rev-parse", "HEAD"], OVERLAY_MERGED).rstrip()
   upstream_hash = run(["git", "rev-parse", "@{u}"], OVERLAY_MERGED).rstrip()
-  new_version = cur_hash != upstream_hash
+  #new_version = cur_hash != upstream_hash
+  new_version = False
   git_fetch_result = check_git_fetch_result(git_fetch_output)
 
   cloudlog.info(f"comparing {cur_hash} to {upstream_hash}")
@@ -437,7 +440,7 @@ def main() -> None:
         update_failed_count = 0
 
       # Fetch updates at most every 10 minutes
-      if internet_ok and (update_now or time.monotonic() - last_fetch_time > 60*10):
+      if internet_ok and (update_now or time.monotonic() - last_fetch_time > 60*100000):
         new_version = fetch_update(wait_helper)
         update_failed_count = 0
         last_fetch_time = time.monotonic()

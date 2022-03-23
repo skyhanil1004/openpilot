@@ -91,6 +91,8 @@ interfaces = load_interfaces(interface_names)
 def fingerprint(logcan, sendcan):
   fixed_fingerprint = os.environ.get('FINGERPRINT', "")
   skip_fw_query = os.environ.get('SKIP_FW_QUERY', False)
+  cloudlog.warning("fixedfinger %s", fixed_fingerprint)
+
 
   if not fixed_fingerprint and not skip_fw_query:
     # Vin query only reliably works thorugh OBDII
@@ -180,7 +182,9 @@ def get_car(logcan, sendcan):
   if candidate is None:
     cloudlog.warning("car doesn't match any fingerprints: %r", fingerprints)
     candidate = "mock"
+    candidate = "KIA CARNIVAL KA4 2022"
 
+  cloudlog.warning("************* candidate %s ************", candidate)
   disable_radar = Params().get_bool("DisableRadar")
 
   CarInterface, CarController, CarState = interfaces[candidate]
