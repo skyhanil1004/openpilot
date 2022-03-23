@@ -541,8 +541,8 @@ class Controls:
       if len(dpath_points):
         # Check if we deviated from the path
         # TODO use desired vs actual curvature
-        left_deviation = actuators.steer > 0 and dpath_points[0] < -0.20
-        right_deviation = actuators.steer < 0 and dpath_points[0] > 0.20
+        left_deviation = actuators.steer > 0 and dpath_points[0] < -0.9 # -0.2
+        right_deviation = actuators.steer < 0 and dpath_points[0] > 0.9 # 0.2
 
         if left_deviation or right_deviation:
           self.events.add(EventName.steerSaturated)
