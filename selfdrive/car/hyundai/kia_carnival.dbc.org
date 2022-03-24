@@ -151,19 +151,14 @@ BO_ 298 LKAS_KA4: 16 XXX
  SG_ TORQUE_REQUEST : 41|11@1+ (1,-1024) [0|4095] "" XXX
  SG_ COUNTER : 16|8@1+ (1,0) [0|255] "" XXX
  SG_ CHECKSUM : 0|16@1+ (1,0) [0|65535] "" XXX
+ SG_ LDWS_STATUS : 38|2@1+ (1,0) [0|255] "" XXX
+ SG_ LKAS_undef02 : 25|1@0+ (1,0) [0|1] "" XXX
  SG_ LKAS_undef03 : 80|1@0+ (1,0) [0|1] "" XXX
- SG_ LKAS_undef04 : 109|3@1+ (1,0) [0|7] "" XXX
- SG_ LKAS_undef05 : 104|5@1+ (1,0) [0|31] "" XXX
- SG_ LDWS_STATUS : 38|3@1+ (1,0) [0|65535] "" XXX
- SG_ LKAS_LDWD01 : 24|3@1+ (1,0) [0|7] "" XXX
- SG_ LKAS_LDWS02 : 63|4@0+ (1,0) [0|15] "" XXX
- SG_ LKAS_undef01 : 28|2@0+ (1,0) [0|3] "" XXX
+ SG_ LKAS_undef04 : 104|8@1+ (1,0) [0|255] "" XXX
+ SG_ LKAS_lane : 28|2@0+ (1,0) [0|3] "" XXX
 
-CM_ SG_ 64 PRND "5:D 7:R 0:P 17:R";
+
 CM_ SG_ 961 COUNTER_ALT "only increments on change";
 CM_ SG_ 1041 COUNTER_ALT "only increments on change";
 CM_ SG_ 1043 COUNTER_ALT "only increments on change";
-CM_ SG_ 298 LDWS_STATUS "0:off 1:on 2: 4:";
-CM_ SG_ 298 LKAS_LDWD01 "2: 6: 7:";
-CM_ SG_ 480 ADAS_COLOR "0:OFF 1:WHITE 2:GREEN 3:BLINK";
-VAL_ 53 GEAR 0 "P" 5 "D" 6 "N" 7 "R" ;
+VAL_ 64 GEAR 0 "P" 5 "D" 14 "N" 7 "R" ;

@@ -24,19 +24,14 @@ def create_lkas_ka4(packer, frame, apply_steer, steer_req,
   values = lkas_ka4
   values["CHECKSUM"] = 0
   values["COUNTER"] = frame % 255
+  values["TORQUE_REQUEST"] = apply_steer
+  values["STEER_REQ"] = steer_req
 
-  if enabled:
-    values["TORQUE_REQUEST"] = apply_steer
-    values["STEER_REQ"] = steer_req
-
-  #values["LDWS_STATUS"] =    # ??
-  #values["LKAS_LDWS01"] = 
-  #values["LKAS_LDWS02"] = 
-  #values["LKAS_undef01"] = 
-  #values["LKAS_undef02"] = 
-  #values["LKAS_undef03"] = 
-  #values["LKAS_undef04"] = 
-  #values["LKAS_undef05"] = 
+  #values["LDW_STATUS"] = 2   # ??
+  #values["LKAS_lane"] = 3
+  #values["LKAS_undef02"] = 1
+  #values["LKAS_undef03"] = 1
+  #values["LKAS_undef04"] = 1
 
 
   msg = packer.make_can_msg("LKAS_KA4", 4, values)
@@ -51,9 +46,7 @@ def create_adas_status_ka4(packer,  adas_ka4, enabled, frame):
   values = adas_ka4
   values["CHECKSUM"]  = 0
   values["COUNTER"] =  frame % 255
-
-  if enabled:
-    values["ADAS_COLOR"] = 2 if enabled else 0
+  values["ADAS_COLOR"] = 2 if enabled else 0
 
   msg = packer.make_can_msg("ADAS_STATUS", 4, values)
 
