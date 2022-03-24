@@ -528,7 +528,8 @@ class Controls:
         if CC.latActive:
           steer = clip(self.sm['testJoystick'].axes[1], -1, 1)
           # max angle is 45 for angle-based cars
-          actuators.steer, actuators.steeringAngleDeg = steer, steer * 45.
+          actuators.steer, actuators.steeringAngleDeg = steer, steer * 90.   # by HANIL
+          #actuators.steer, actuators.steeringAngleDeg = steer, steer * 45.
 
         lac_log.active = self.active
         lac_log.steeringAngleDeg = CS.steeringAngleDeg
@@ -541,8 +542,8 @@ class Controls:
       if len(dpath_points):
         # Check if we deviated from the path
         # TODO use desired vs actual curvature
-        left_deviation = actuators.steer > 0 and dpath_points[0] < -0.9 # -0.2
-        right_deviation = actuators.steer < 0 and dpath_points[0] > 0.9 # 0.2
+        left_deviation = actuators.steer > 0 and dpath_points[0] < -0.9 # -0.2 by HANIL
+        right_deviation = actuators.steer < 0 and dpath_points[0] > 0.9 # 0.2 by HANIL
 
         if left_deviation or right_deviation:
           self.events.add(EventName.steerSaturated)
