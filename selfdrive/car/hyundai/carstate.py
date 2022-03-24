@@ -15,7 +15,7 @@ def get_can_parser_ev6(CP):
     ("WHEEL_SPEED_4", "WHEEL_SPEEDS"),
 
     ("ACCELERATOR_PEDAL", "ACCELERATOR"),
-    ("SHIFTER", "GEAR"),
+    ("SHIFTER", "GEARKA4"),
     ("GEAR", "ACCELERATOR"),
     ("BRAKE_PRESSED", "BRAKE"),
 
@@ -38,7 +38,7 @@ def get_can_parser_ev6(CP):
   checks = [
     ("WHEEL_SPEEDS", 0),
     ("ACCELERATOR", 0),
-    ("GEAR", 0),
+    ("GEARKA4", 5),
     ("BRAKE", 0),
     ("STEERING_SENSORS", 0),
     ("STEERING_SENSORS_ALT", 0),
@@ -58,8 +58,8 @@ def get_cam_can_parser_ev6(CP):
     signals = [
       # sig_name, sig_address
       ("LDW_STATUS", "LKAS_KA4"),
-      ("LKAS_LDWS01", "LKAS_KA4"),
-      ("LKAS_LDWS02", "LKAS_KA4"),
+#      ("LKAS_LDWS01", "LKAS_KA4"),
+#      ("LKAS_LDWS02", "LKAS_KA4"),
       ("STEER_REQ", "LKAS_KA4"),
       ("TORQUE_REQUEST", "LKAS_KA4"),
       ("LKAS_undef01", "LKAS_KA4"),
@@ -68,6 +68,7 @@ def get_cam_can_parser_ev6(CP):
       ("LKAS_undef04", "LKAS_KA4"),
       ("LKAS_undef05", "LKAS_KA4"),
       ("ADAS_undef01", "ADAS_STATUS"),
+      ("ADAS_COLOR", "ADAS_STATUS"),
     ]
 
     checks = [
@@ -85,7 +86,7 @@ class CarState(CarStateBase):
     can_define = CANDefine(DBC[CP.carFingerprint]["pt"])
 
     if CP.carFingerprint in HDA2_CAR:
-      self.shifter_values = can_define.dv["GEAR"]["SHIFTER"]
+      self.shifter_values = can_define.dv["GEARKA4"]["SHIFTER"]
       #self.shifter_values = can_define.dv["ACCELERATOR"]["GEAR"]
     elif self.CP.carFingerprint in FEATURES["use_cluster_gears"]:
       self.shifter_values = can_define.dv["CLU15"]["CF_Clu_Gear"]
@@ -107,7 +108,7 @@ class CarState(CarStateBase):
     ret.doorOpen = cp.vl["DOORS_SEATBELTS"]["DRIVER_DOOR_OPEN"] == 1
     ret.seatbeltUnlatched = cp.vl["DOORS_SEATBELTS"]["DRIVER_SEATBELT_LATCHED"] == 0
 
-    gear = cp.vl["GEAR"]["SHIFTER"]
+    gear = cp.vl["GEARKA4"]["SHIFTER"]
     #gear = cp.vl["ACCELERATOR"]["GEAR"]
 
     ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(gear))

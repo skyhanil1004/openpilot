@@ -91,7 +91,7 @@ class Controls:
 
     # wait for one pandaState and one CAN packet
     print("Waiting for CAN messages...")
-    get_one_can(self.can_sock)
+    get_one_can(self.can_sock)  # dolson
 
     self.CI, self.CP = get_car(self.can_sock, self.pm.sock['sendcan'])
     self.CP.unsafeMode = 0  # see panda/board/safety_declarations.h for allowed values

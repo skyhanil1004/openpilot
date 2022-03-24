@@ -2,6 +2,7 @@ import crcmod
 import struct
 
 from selfdrive.car.hyundai.values import CAR, CHECKSUM
+from selfdrive.swaglog import cloudlog
 
 hyundai_checksum = crcmod.mkCrcFun(0x11D, initCrc=0xFD, rev=False, xorOut=0xdf)
 
@@ -22,6 +23,7 @@ def create_lkas_ka4(packer, frame, apply_steer, steer_req,
                     left_lane, right_lane,
                     left_lane_depart, right_lane_depart):
   values = lkas_ka4
+  #cloudlog.warning("*checksume %r ************", values)
   values["CHECKSUM"] = 0
   values["COUNTER"] = frame % 255
 
@@ -53,7 +55,7 @@ def create_adas_status_ka4(packer,  adas_ka4, enabled, frame):
   values["COUNTER"] =  frame % 255
 
   if enabled:
-    values["ADAS_COLOR"] = 2 if enabled else 0
+    values["ADAS_COLOR"] = 2
 
   msg = packer.make_can_msg("ADAS_STATUS", 4, values)
 
