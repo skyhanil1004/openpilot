@@ -53,7 +53,6 @@ def get_can_parser_ev6(CP):
   #return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 5)
 
 
-
 def get_cam_can_parser_ev6(CP):
     signals = [
       # sig_name, sig_address
@@ -76,9 +75,7 @@ def get_cam_can_parser_ev6(CP):
       ("ADAS_STATUS", 5)
     ]
 
-
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 6)
-
 
 class CarState(CarStateBase):
   def __init__(self, CP):
@@ -87,7 +84,6 @@ class CarState(CarStateBase):
 
     if CP.carFingerprint in HDA2_CAR:
       self.shifter_values = can_define.dv["GEARKA4"]["SHIFTER"]
-      #self.shifter_values = can_define.dv["ACCELERATOR"]["GEAR"]
     elif self.CP.carFingerprint in FEATURES["use_cluster_gears"]:
       self.shifter_values = can_define.dv["CLU15"]["CF_Clu_Gear"]
     elif self.CP.carFingerprint in FEATURES["use_tcu_gears"]:
