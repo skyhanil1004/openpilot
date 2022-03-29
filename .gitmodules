@@ -1,15 +1,15 @@
 [submodule "panda"]
 	path = panda
-	url = ../../commaai/panda.git
+	url = ../../skyhanil1004/panda.git
 [submodule "opendbc"]
 	path = opendbc
-	url = ../../commaai/opendbc.git
+	url = ../../skyhanil1004/opendbc.git
 [submodule "laika_repo"]
 	path = laika_repo
-	url = ../../commaai/laika.git
+	url = ../../skyhanil1004/laika.git
 [submodule "cereal"]
 	path = cereal
-	url = ../../commaai/cereal.git
+	url = ../../skyhanil1004/cereal.git
 [submodule "rednose_repo"]
 	path = rednose_repo
-	url = ../../commaai/rednose.git
+	url = ../../skyhanil1004/rednose.git
