@@ -1,17 +1,22 @@
+from cereal import car
 from selfdrive.car import dbc_dict
+Ecu = car.CarParams.Ecu
 
+# Steer torque limits
+class CarControllerParams:
+  ACCEL_MIN = -3.5 # m/s
+  ACCEL_MAX = 2.0 # m/s
 
-class SteerLimitParams:
-  STEER_MAX = 1023        # 262 faults
-  STEER_DELTA_UP = 5     # 3 is stock. 100 is fine. 200 is too much it seems
-  STEER_DELTA_DOWN = 10    # no faults on the way down it seems
-  STEER_ERROR_MAX = 1023
+  def __init__(self, CP):
+    self.STEER_MAX = 1023
+    self.STEER_DELTA_UP = 5
+    self.STEER_DELTA_DOWN = 10
+    self.STEER_DRIVER_ALLOWANCE = 50
+    self.STEER_DRIVER_MULTIPLIER = 2
+    self.STEER_DRIVER_FACTOR = 1
 
 class CAR:
-  RANGEROVER_2017_VOGUE = "LANDROVER RangeRover Vogue 2017"
-
-# Unique can messages:
-# rangerover 2017 vogue lkas sterr torque msg 28F, 1D8, 3D4
+   RANGEROVER_2017_VOGUE = "LANDROVER RangeRover Vogue 2017"
 
 FINGERPRINTS = {
   CAR.RANGEROVER_2017_VOGUE: [
@@ -20,31 +25,27 @@ FINGERPRINTS = {
 }
 
 
-DBC = {
-  CAR.RANGEROVER_2017_VOGUE: dbc_dict(
-    'landrover_rangerover_2017_vogue',  # 'pt' 
-	 None),  # 'radar'
+FW_VERSIONS = {
 }
-
-STEER_THRESHOLD = 1023
-
-class ECU:
-  CAM = 0 # LKAS camera
 
 # addr: (ecu, cars, bus, 1/freq*100, vl)
 # 1D8 4694050000000582
 # 1D8#46950500000008BC
 # 3D4 800d0141e73ded00
 STATIC_MSGS = [
- (0x1D8, ECU.CAM, (CAR.RANGEROVER_2017_VOGUE), 0, 10, b'\x46\x95\x05\x05\x00\x00\x08\xbc'),
-# (0x3D4, ECU.CAM, (CAR.RANGEROVER_2017_VOGUE), 0, 40, '\x80\x0d\x01\x41\xe7\x3d\xed\x00'),
+ (0x1D8, 0, (CAR.RANGEROVER_2017_VOGUE), 0, 10, b'\x46\x95\x05\x05\x00\x00\x08\xbc'),
+# (0x3D4, Ecu.CAM, (CAR.RANGEROVER_2017_VOGUE), 0, 40, '\x80\x0d\x01\x41\xe7\x3d\xed\x00'),
 ]
 
-ECU_FINGERPRINT = {
-  ECU.CAM: 0x28f,   # steer torque cmd
+Ecu_FINGERPRINT = {
+  Ecu.fwdCamera: 0x28f,   # steer torque cmd
 }
 
 
-def check_ecu_msgs(fingerprint, ecu):
-  # return True if fingerprint contains messages normally sent by a given ecu
-  return ECU_FINGERPRINT[ecu] in fingerprint
+DBC = {
+  CAR.RANGEROVER_2017_VOGUE: dbc_dict(
+    'landrover_rangerover_2017_vogue',  # 'pt'
+   None),  # 'radar'
+}
+
+STEER_THRESHOLD = 1023

@@ -49,4 +49,4 @@ def create_lkas_command(packer, apply_steer, moving_fast, frame):
 
   candat = binascii.hexlify(bytearray(dat))
   #cloudlog.warning("LANDROVER LKAS %d %x (%x:%x) %s", apply_steer, apply_steer, counter, torq, candat)
-  return  make_can_msg(0x28F, codecs.decode(candat, 'hex'), 0)
+  return  packer.make_can_msg(0x28F, codecs.decode(candat, 'hex'), 0)
