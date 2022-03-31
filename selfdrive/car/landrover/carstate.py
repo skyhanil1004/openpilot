@@ -159,8 +159,6 @@ class CarState(CarStateBase):
 
   @staticmethod
   def get_cam_can_parser(CP):
-    if CP.carFingerprint in HDA2_CAR:
-      return get_cam_can_parser_ev6(CP)
 
     signals = [
      # sig_name, sig_address, default
