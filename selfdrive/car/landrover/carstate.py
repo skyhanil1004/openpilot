@@ -6,103 +6,9 @@ from opendbc.can.parser import CANParser
 from opendbc.can.can_define import CANDefine
 from selfdrive.config import Conversions as CV
 
-def parse_gear_shifter(can_gear):
-  if can_gear == 0x0:
-    return "P"
-  elif can_gear == 0x9:
-    return "R"
-  elif can_gear == 0x12:
-    return "N"
-  elif can_gear == 0x1b:
-    return "D"
-  elif can_gear == 0xbb:
-    return "S"
-  return "unknown"
 
-
-class CarState(CarStateBase):
-  def __init__(self, CP):
-    super().__init__(CP)
-    can_define = CANDefine(DBC[CP.carFingerprint]["pt"])
-
-    #self.shifter_values = can_define.dv["GEARKA4"]["SHIFTER"]
-    self.shifter_values = can_define.dv["GEAR_PRND"]["GEAR_SHIFT"]
-
-    self.brake_error = False
-    self.park_brake = False
-
-    self.prev_angle_steers = 0.0
-    self.angle_rate_multi = 1.0
-
-
-  def update(self, cp, cp_cam):
-    ret = car.CarState.new_message()
-
-
-    self.prev_angle_steers = float(self.angle_steers)
-
-    ret.gas = 0
-    ret.gasPressed = ret.gas > 1e-3
-    ret.brakePressed = (cp.vl["CRUISE_CONTROL"]['DRIVER_BRAKE'] == 1)
-
-    ret.doorOpen = 0
-    ret.seatbeltUnlatched = (cp.vl["SEAT_BELT"]["SEAT_BELT_DRIVER"]  == 0)
-
-    gear = cp.vl["GEARKA4"]["SHIFTER"]
-    #gear = cp.vl["ACCELERATOR"]["GEAR"]
-
-    ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(gear))
-
-    v_wheel = (cp.vl["SPEED_01"]["SPEED01"] + cp.vl["SPEED_02"]["SPEED02"]) / 2.
-
-    # TODO: figure out positions
-    ret.wheelSpeeds = v_wheel
-
-    ret.vEgoRaw = v_hwheel
-    ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
-    ret.standstill = not v_wheel > 0.001
-
-    ret.steeringRateDeg = (cp.vl["EPS_01"]["STEER_SPEED01"])
-    ret.steeringAngleDeg = float(cp.vl["EPS_01"]["STEER_ANGLE01"])
-
-    # HANIL for landrover steers rate
-    angle_steers_diff = float(ret.steeringAngleDeg - self.prev_angle_steers)
-
-    if angle_steers_diff < 0.0:
-           self.angle_rate_multi = -4
-    else:
-        if angle_steers_diff > 0.0:
-           self.angle_rate_multi = 4
-
-    ret.steeringRateDeg *= self.angle_rate_multi
-
-
-    ret.steeringTorque = cp.vl["EPS_03"]["STEER_TORQUE_DRIVER03"]
-    ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
-
-    # self.steer_override = False # abs(self.steer_torque_driver) > STEER_THRESHOLD
-    steer_state = 1 #cp.vl[""]["LKAS_STATE"]
-    self.steer_error = steer_state == 4 or (steer_state == 0 and self.v_ego > self.CP.minSteerSpeed)
-
-
-    ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["TURN_SIGNAL"]['LEFT_TURN'],
-                                                                      cp.vl["TURN_SIGNAL"]['RIGHT_TURN'])
-
-    ret.cruiseState.available = True
-    ret.cruiseState.enabled = cp.vl["SCC1"]["CRUISE_ACTIVE"] == 1
-    ret.cruiseState.standstill = False
-
-    #speed_conv = CV.MPH_TO_MS  CV.KPH_TO_MS
-    ret.cruiseState.speed = round(cp.vl["CRUISE_CONTROL"]['SPEED_CRUISE_RESUME']) * CV.KPH_TO_MS
-
-    self.lkas_counter = cp_cam.vl["LKAS_RUN"]['COUNTER']
-
-    return ret
-
-
-  @staticmethod
-  def get_can_parser(CP):
-   signals = [
+def get_can_parser(CP):
+  signals = [
     # sig_name, sig_address, default
     ("STEER_RATE00", "EPS_00", 0),
     ("STEER_ANGLE01", "EPS_01", 0),
@@ -134,10 +40,10 @@ class CarState(CarStateBase):
     ("FRONT_CAR_DISTANCE", "LKAS_HUD_STAT", 0),
     ("LADAR_DISTANCE", "LKAS_HUD_STAT", 0),
     ("HIBEAM", "HEAD_LIGHT", 0),
-   ]
+  ]
 
-  # It's considered invalid if it is not received for 10x the expected period (1/f).
-   checks = [
+# It's considered invalid if it is not received for 10x the expected period (1/f).
+  checks = [
     # sig_address, frequency
     ("EPS_00", 0),
     ("EPS_01", 0),
@@ -153,19 +59,116 @@ class CarState(CarStateBase):
     ("LKAS_HUD_STAT", 0),
     ("HEAD_LIGHT", 0),
     ("LKAS_STATUS", 0),
-   ]
+  ]
 
-   return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 0)
+  return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 0)
 
-  @staticmethod
-  def get_cam_can_parser(CP):
+ def get_cam_can_parser(CP):
+     signals = [
+       # sig_name, sig_address, default
+       # TODO read in all the other values
+       ( "COUNTER", "LKAS_RUN", -1),
+     ]
 
-    signals = [
-     # sig_name, sig_address, default
-     # TODO read in all the other values
-    ( "COUNTER", "LKAS_RUN", -1),
-    ] 
-    checks = []
+     checks = []
+
+     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2)
+
+def parse_gear_shifter(can_gear):
+  if can_gear == 0x0:
+    return "P"
+  elif can_gear == 0x9:
+    return "R"
+  elif can_gear == 0x12:
+    return "N"
+  elif can_gear == 0x1b:
+    return "D"
+  elif can_gear == 0xbb:
+    return "S"
+  return "unknown"
 
 
-    return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2)
+class CarState(CarStateBase):
+  def __init__(self, CP):
+    super().__init__(CP)
+
+    can_define = CANDefine(DBC[CP.carFingerprint]["pt"])
+
+    self.left_blinker_on = 0
+    self.right_blinker_on = 0
+    self.left_alert = 0
+    self.right_alert = 0
+
+    self.angle_steers = 0.0
+
+    self.shifter_values = can_define.dv["GEAR_PRND"]["GEAR_SHIFT"]
+
+    self.brake_error = False
+    self.park_brake = False
+
+    self.prev_angle_steers = 0.0
+    self.angle_rate_multi = 1.0
+
+    self.v_wheel = 0
+    self.angle_steers_diff = 0
+
+
+  def update(self, cp, cp_cam):
+    ret = car.CarState.new_message()
+
+
+    self.prev_angle_steers = float(self.angle_steers)
+
+    ret.gas = 0
+    ret.gasPressed = ret.gas > 1e-3
+    ret.brakePressed = (cp.vl["CRUISE_CONTROL"]['DRIVER_BRAKE'] == 1)
+
+    #ret.doorOpen = 0
+    ret.seatbeltUnlatched = (cp.vl["SEAT_BELT"]["SEAT_BELT_DRIVER"]  == 0)
+
+    gear = cp.vl["GEAR_PRND"]["GEAR_SHIFT"]
+
+    ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(gear))
+
+    self.v_wheel = (cp.vl["SPEED_01"]["SPEED01"] + cp.vl["SPEED_02"]["SPEED02"]) / 2.
+
+    ret.vEgoRaw = self.v_hwheel
+    ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
+    ret.standstill = not v_wheel > 0.001
+
+    ret.steeringRateDeg = (cp.vl["EPS_01"]["STEER_SPEED01"])
+    ret.steeringAngleDeg = float(cp.vl["EPS_01"]["STEER_ANGLE01"])
+
+    # HANIL for landrover steers rate
+    self.angle_steers_diff = float(ret.steeringAngleDeg - self.prev_angle_steers)
+
+    if self.angle_steers_diff < 0.0:
+           self.angle_rate_multi = -4
+    else:
+        if self.angle_steers_diff > 0.0:
+           self.angle_rate_multi = 4
+
+    ret.steeringRateDeg *= self.angle_rate_multi
+
+
+    ret.steeringTorque = cp.vl["EPS_03"]["STEER_TORQUE_DRIVER03"]
+    ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
+
+    # self.steer_override = False # abs(self.steer_torque_driver) > STEER_THRESHOLD
+    steer_state = 1 #cp.vl[""]["LKAS_STATE"]
+    self.steer_error = steer_state == 4 or (steer_state == 0 and self.v_ego > self.CP.minSteerSpeed)
+
+
+    ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["TURN_SIGNAL"]['LEFT_TURN'],
+                                                                      cp.vl["TURN_SIGNAL"]['RIGHT_TURN'])
+
+    ret.cruiseState.available = True
+    ret.cruiseState.enabled = cp.vl["SCC1"]["CRUISE_ACTIVE"] == 1
+    ret.cruiseState.standstill = False
+
+    #speed_conv = CV.MPH_TO_MS  CV.KPH_TO_MS
+    ret.cruiseState.speed = round(cp.vl["CRUISE_CONTROL"]['SPEED_CRUISE_RESUME']) * CV.KPH_TO_MS
+
+    self.lkas_counter = cp_cam.vl["LKAS_RUN"]['COUNTER']
+
+    return ret
