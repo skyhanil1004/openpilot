@@ -182,7 +182,8 @@ def get_car(logcan, sendcan):
   if candidate is None:
     cloudlog.warning("car doesn't match any fingerprints: %r", fingerprints)
     candidate = "mock"
-    candidate = "KIA CARNIVAL KA4 2022"
+    #candidate = "KIA CARNIVAL KA4 2022"
+    candidate = "RANGEROVER_2017_VOGUE"
 
   cloudlog.warning("************* candidate %s ************", candidate)
   disable_radar = Params().get_bool("DisableRadar")

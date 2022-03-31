@@ -26,7 +26,7 @@ class CarState(CarStateBase):
     can_define = CANDefine(DBC[CP.carFingerprint]["pt"])
 
     #self.shifter_values = can_define.dv["GEARKA4"]["SHIFTER"]
-    self.shifter_values = parse_gear_shifter(cp.vl['GEAR_PRND']['GEAR_SHIFT'])
+    self.shifter_values = can_define.dv["GEAR_PRND"]["GEAR_SHIFT"]
 
     self.brake_error = False
     self.park_brake = False
