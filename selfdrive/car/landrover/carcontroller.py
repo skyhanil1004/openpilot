@@ -3,7 +3,8 @@ from common.realtime import DT_CTRL
 from common.numpy_fast import clip, interp
 from selfdrive.config import Conversions as CV
 from selfdrive.car import apply_std_steer_torque_limits
-from selfdrive.car.landrover.values import CarControllerParams, CAR
+from selfdrive.car.landrover.landrovercan import create_lkas_command, create_lkas_hud
+from selfdrive.car.landrover.values import CarControllerParams, CAR, STATIC_MSGS
 from opendbc.can.packer import CANPacker
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
@@ -50,9 +51,9 @@ class CarController():
 
     can_sends = []
 
-    for (addr, ecu, cars, bus, fr_step, vl) in STATIC_MSGS:
-       if(frame % fr_step == 0):  # 25 0.25s period
-           can_sends.append(make_can_msg(addr, vl, bus ))
+    #for (addr, ecu, cars, bus, fr_step, vl) in STATIC_MSGS:
+    #   if(frame % fr_step == 0):  # 25 0.25s period
+    #       can_sends.append([addr, bus, vl, 0])
 
     if (frame % 20 == 0):
        can_sends.append(create_lkas_hud(self.packer, left_lane, right_lane, left_lane_depart, right_lane_depart ))

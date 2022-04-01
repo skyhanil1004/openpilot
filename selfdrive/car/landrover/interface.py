@@ -3,7 +3,7 @@ from cereal import car
 from panda import Panda
 from common.params import Params
 from selfdrive.config import Conversions as CV
-from selfdrive.car.landrover.values import CAR
+from selfdrive.car.landrover.values import CAR, CarControllerParams
 #from selfdrive.car.landrover.radar_interface import RADAR_START_ADDR
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
@@ -55,6 +55,14 @@ class CarInterface(CarInterfaceBase):
     ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.01,0.02], [0.0005,0.001]]
     ret.minSteerSpeed = 1.8    # m/s
     ret.minEnableSpeed = -1.   # enable is done by stock ACC, so ignore this
+
+    ret.centerToFront = ret.wheelbase * 0.4
+
+    # TODO: start from empirically derived lateral slip stiffness for the civic and scale by
+    # mass and CG position, so all cars will have approximately similar dyn behaviors
+    ret.tireStiffnessFront, ret.tireStiffnessRear = scale_tire_stiffness(ret.mass, ret.wheelbase, ret.centerToFront,
+                                                                         tire_stiffness_factor=tire_stiffness_factor)
+
 
 
     return ret

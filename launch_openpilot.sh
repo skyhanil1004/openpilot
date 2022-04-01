@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-export FINGERPRINT="KIA CARNIVAL KA4 2022"
+#export FINGERPRINT="KIA CARNIVAL KA4 2022"
 
 
 export PASSIVE="0"

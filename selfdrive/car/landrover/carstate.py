@@ -7,7 +7,7 @@ from opendbc.can.can_define import CANDefine
 from selfdrive.config import Conversions as CV
 
 
-def get_can_parser(CP):
+def get_can_parser_landrover(CP):
   signals = [
     # sig_name, sig_address, default
     ("STEER_RATE00", "EPS_00", 0),
@@ -63,16 +63,16 @@ def get_can_parser(CP):
 
   return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 0)
 
- def get_cam_can_parser(CP):
-     signals = [
-       # sig_name, sig_address, default
-       # TODO read in all the other values
-       ( "COUNTER", "LKAS_RUN", -1),
-     ]
+def get_cam_can_parser_landrover(CP):
+    signals = [
+      # sig_name, sig_address, default
+      # TODO read in all the other values
+      ( "COUNTER", "LKAS_RUN", -1),
+    ]
 
-     checks = []
+    checks = []
 
-     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2)
+    return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2)
 
 def parse_gear_shifter(can_gear):
   if can_gear == 0x0:
@@ -112,6 +112,14 @@ class CarState(CarStateBase):
     self.v_wheel = 0
     self.angle_steers_diff = 0
 
+  @staticmethod
+  def get_can_parser(CP):
+     return get_can_parser_landrover(CP)
+
+  @staticmethod
+  def get_cam_can_parser(CP):
+     return get_cam_can_parser_landrover(CP)
+  
 
   def update(self, cp, cp_cam):
     ret = car.CarState.new_message()
@@ -132,9 +140,9 @@ class CarState(CarStateBase):
 
     self.v_wheel = (cp.vl["SPEED_01"]["SPEED01"] + cp.vl["SPEED_02"]["SPEED02"]) / 2.
 
-    ret.vEgoRaw = self.v_hwheel
+    ret.vEgoRaw = self.v_wheel
     ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
-    ret.standstill = not v_wheel > 0.001
+    ret.standstill = not self.v_wheel > 0.001
 
     ret.steeringRateDeg = (cp.vl["EPS_01"]["STEER_SPEED01"])
     ret.steeringAngleDeg = float(cp.vl["EPS_01"]["STEER_ANGLE01"])
@@ -163,7 +171,7 @@ class CarState(CarStateBase):
                                                                       cp.vl["TURN_SIGNAL"]['RIGHT_TURN'])
 
     ret.cruiseState.available = True
-    ret.cruiseState.enabled = cp.vl["SCC1"]["CRUISE_ACTIVE"] == 1
+    ret.cruiseState.enabled = cp.vl["CRUISE_CONTROL"]["CRUISE_ON"] == 1
     ret.cruiseState.standstill = False
 
     #speed_conv = CV.MPH_TO_MS  CV.KPH_TO_MS
