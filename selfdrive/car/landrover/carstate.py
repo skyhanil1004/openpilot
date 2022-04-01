@@ -119,7 +119,7 @@ class CarState(CarStateBase):
   @staticmethod
   def get_cam_can_parser(CP):
      return get_cam_can_parser_landrover(CP)
-  
+
 
   def update(self, cp, cp_cam):
     ret = car.CarState.new_message()
@@ -176,6 +176,9 @@ class CarState(CarStateBase):
 
     #speed_conv = CV.MPH_TO_MS  CV.KPH_TO_MS
     ret.cruiseState.speed = round(cp.vl["CRUISE_CONTROL"]['SPEED_CRUISE_RESUME']) * CV.KPH_TO_MS
+
+    self.lkas_run = copy.copy(cp_cam.vl["LKAS_RUN"])
+    self.lkas_status = copy.copy(cp_cam.vl["LKAS_STATUS"])
 
     self.lkas_counter = cp_cam.vl["LKAS_RUN"]['COUNTER']
 

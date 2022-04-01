@@ -7,7 +7,11 @@ import codecs
 # 15 all green
 # 1d left green, right white
 # 35 left white, right green,
-def create_lkas_hud(packer, left_line, right_line, left_lane_depart, right_lane_depart):
+
+def create_lkas_hud(packer, lkas_status, enabled, frame):
+  values = lkas_status
+
+#def create_lkas_hud(packer, lkas_status, left_line, right_line, left_lane_depart, right_lane_depart):
   values = {
     "GREEN2WHITE_RIGHT": 2 if right_lane_depart else 1 if right_line else 3,
     "GREEN2WHITE_LEFT": 2 if left_lane_depart else 1 if left_line else 3,
@@ -23,7 +27,15 @@ def create_lkas_hud(packer, left_line, right_line, left_lane_depart, right_lane_
 
   return packer.make_can_msg("LKAS_STATUS", 0, values)
 
-def create_lkas_command(packer, apply_steer, moving_fast, frame):
+#def create_lkas_command(packer, lkas_run, apply_steer, moving_fast, frame):
+  # LKAS_COMMAND 0x28F (655) Lane-keeping signal to turn the wheel.
+def create_lkas_command(packer, frame, apply_steer, steer_req,
+                    lkas_run, sys_warning, sys_state, enabled,
+                    left_lane, right_lane,
+                    left_lane_depart, right_lane_depart):
+  values = lkas_run
+
+#def create_lkas_command(packer, lkas_run, apply_steer, moving_fast, frame):
   # LKAS_COMMAND 0x28F (655) Lane-keeping signal to turn the wheel.
   counter = frame % 0x10
   values = {
@@ -47,6 +59,6 @@ def create_lkas_command(packer, apply_steer, moving_fast, frame):
   # dat[3] = ((counter << 3) | ((torq & 0x700) >> 8))
   dat[4] = torq & 0xFF
 
-  candat = binascii.hexlify(bytearray(dat))
-  #cloudlog.warning("LANDROVER LKAS %d %x (%x:%x) %s", apply_steer, apply_steer, counter, torq, candat)
-  return  packer.make_can_msg(0x28F, codecs.decode(candat, 'hex'), 0)
+  #candat = binascii.hexlify(bytearray(dat))
+  return  packer.make_can_msg("LKAS_RUN", 0, dat)
+  #return  packer.make_can_msg(0x28F, codecs.decode(candat, 'hex'), 0)
