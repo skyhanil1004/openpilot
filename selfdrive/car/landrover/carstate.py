@@ -68,6 +68,13 @@ def get_cam_can_parser_landrover(CP):
       # sig_name, sig_address, default
       # TODO read in all the other values
       ( "COUNTER", "LKAS_RUN", -1),
+      ( "COUNTER", "LKAS_RUN", 0),
+      ( "HIGH_TORQ", "LKAS_RUN", 0),
+      ( "LKAS_GREEN", "LKAS_RUN", 0),
+      ( "ALLFFFF", "LKAS_RUN", 0),
+      ( "ALL11", "LKAS_RUN", 0),
+      ( "A1", "LKAS_RUN", 0),
+      ( "STEER_TORQ", "LKAS_RUN", 0),
     ]
 
     checks = []
@@ -93,6 +100,7 @@ class CarState(CarStateBase):
     super().__init__(CP)
 
     can_define = CANDefine(DBC[CP.carFingerprint]["pt"])
+    self.shifter_values = can_define.dv["GEAR_PRND"]["GEAR_SHIFT"]
 
     self.left_blinker_on = 0
     self.right_blinker_on = 0
@@ -124,14 +132,11 @@ class CarState(CarStateBase):
   def update(self, cp, cp_cam):
     ret = car.CarState.new_message()
 
-
     self.prev_angle_steers = float(self.angle_steers)
-
     ret.gas = 0
     ret.gasPressed = ret.gas > 1e-3
     ret.brakePressed = (cp.vl["CRUISE_CONTROL"]['DRIVER_BRAKE'] == 1)
-
-    #ret.doorOpen = 0
+    ret.doorOpen = 0
     ret.seatbeltUnlatched = (cp.vl["SEAT_BELT"]["SEAT_BELT_DRIVER"]  == 0)
 
     gear = cp.vl["GEAR_PRND"]["GEAR_SHIFT"]
@@ -144,8 +149,11 @@ class CarState(CarStateBase):
     ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
     ret.standstill = not self.v_wheel > 0.001
 
-    ret.steeringRateDeg = (cp.vl["EPS_01"]["STEER_SPEED01"])
-    ret.steeringAngleDeg = float(cp.vl["EPS_01"]["STEER_ANGLE01"])
+    ret.steeringRateDeg = cp.vl["EPS_01"]["STEER_SPEED01"]
+    ret.steeringAngleDeg = cp.vl["EPS_01"]["STEER_ANGLE01"]
+    ret.steeringTorque = cp.vl["EPS_04"]["STEER_TORQUE_EPS04"]
+    ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
+
 
     # HANIL for landrover steers rate
     self.angle_steers_diff = float(ret.steeringAngleDeg - self.prev_angle_steers)
@@ -167,8 +175,7 @@ class CarState(CarStateBase):
     self.steer_error = steer_state == 4 or (steer_state == 0 and self.v_ego > self.CP.minSteerSpeed)
 
 
-    ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["TURN_SIGNAL"]['LEFT_TURN'],
-                                                                      cp.vl["TURN_SIGNAL"]['RIGHT_TURN'])
+    ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["TURN_SIGNAL"]['LEFT_TURN'],cp.vl["TURN_SIGNAL"]['RIGHT_TURN'])
 
     ret.cruiseState.available = True
     ret.cruiseState.enabled = cp.vl["CRUISE_CONTROL"]["CRUISE_ON"] == 1

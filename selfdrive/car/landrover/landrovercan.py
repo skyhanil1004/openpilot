@@ -1,18 +1,14 @@
 from cereal import car
+import struct
 from selfdrive.car.landrover.lkas_tbl import find_steer_torq
 from selfdrive.car import make_can_msg
-import binascii
-import codecs
 
 # 15 all green
 # 1d left green, right white
 # 35 left white, right green,
 
-#def create_lkas_hud(packer, lkas_status, enabled, frame):
-#  values = lkas_status
-
 def create_lkas_hud(packer, lkas_status, left_line, right_line, left_lane_depart, right_lane_depart):
-  #values = lkas_status
+  values = lkas_status
   values = {
     "GREEN2WHITE_RIGHT": 2 if right_lane_depart else 1 if right_line else 3,
     "GREEN2WHITE_LEFT": 2 if left_lane_depart else 1 if left_line else 3,
@@ -34,7 +30,7 @@ def create_lkas_command(packer, lkas_run, frame, apply_steer, steer_req,
                     sys_warning, sys_state, enabled,
                     left_lane, right_lane,
                     left_lane_depart, right_lane_depart):
-  #values = lkas_run
+  values = lkas_run
 
   counter = frame % 0x10
   values = {
@@ -47,6 +43,8 @@ def create_lkas_command(packer, lkas_run, frame, apply_steer, steer_req,
     "LKAS_GREEN" : 1
   }
 
+  msg = packer.make_can_msg("LKAS_RUN", 0, values)`
+
   #       cs                cnt3  torq
   #       0      1     2     3     4
   dat = [ 0xeb, 0xff, 0xff, 0xe4, 0x00, 0x70, 0x00, 0x00 ]
@@ -55,5 +53,5 @@ def create_lkas_command(packer, lkas_run, frame, apply_steer, steer_req,
   dat[3] = (((counter << 3) | ((torq & 0x700) >> 8)) | 0x80)
   dat[4] = torq & 0xFF
 
-  return  packer.make_can_msg("LKAS_RUN", 0, dat)
-  #return  packer.make_can_msg(0x28F, codecs.decode(candat, 'hex'), 0)
+  #return  packer.make_can_msg("LKAS_RUN", 0, values)
+  return make_can_msg(0x28F, dat, 0)
