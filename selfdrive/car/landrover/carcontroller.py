@@ -11,6 +11,29 @@ VisualAlert = car.CarControl.HUDControl.VisualAlert
 LongCtrlState = car.CarControl.Actuators.LongControlState
 
 
+def process_hud_alert(enabled, fingerprint, visual_alert, left_lane,
+                      right_lane, left_lane_depart, right_lane_depart):
+  sys_warning = (visual_alert in (VisualAlert.steerRequired, VisualAlert.ldw))
+
+  # initialize to no line visible
+  sys_state = 1
+  if left_lane and right_lane or sys_warning:  # HUD alert only display when LKAS status is active
+    sys_state = 3 if enabled or sys_warning else 4
+  elif left_lane:
+    sys_state = 5
+  elif right_lane:
+    sys_state = 6
+
+  # initialize to no warnings
+  left_lane_warning = 0
+  right_lane_warning = 0
+  if left_lane_depart:
+    left_lane_warning = 1 if fingerprint in (CAR.GENESIS_G90, CAR.GENESIS_G80) else 2
+  if right_lane_depart:
+    right_lane_warning = 1 if fingerprint in (CAR.GENESIS_G90, CAR.GENESIS_G80) else 2
+
+  return sys_warning, sys_state, left_lane_warning, right_lane_warning
+
 class CarController():
   def __init__(self, dbc_name, CP, VM):
     self.p = CarControllerParams(CP)
@@ -60,13 +83,13 @@ class CarController():
            can_sends.append([addr, bus, vl, 0])
 
     if (frame % 20 == 0):
-       #can_sends.append(create_lkas_hud(self.packer, left_lane, right_lane, left_lane_depart, right_lane_depart ))
-       can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, enabled, frame))
+       can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, left_lane, right_lane, left_lane_depart, right_lane_depart ))
+       #can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, enabled, frame))
 
     if (frame % 2 == 0):
        #new_msg = create_lkas_command(self.packer, int(apply_steer), self.gone_fast_yet, self.lkascnt)
-       new_msg = create_lkas_command(self.packer, frame, apply_steer, lkas_active,
-                                CS.lkas_run, sys_warning, sys_state, enabled,
+       new_msg = create_lkas_command(self.packer, CS.lkas_run, frame, apply_steer, lkas_active,
+                                 sys_warning, sys_state, enabled,
                                 left_lane, right_lane,
                                 left_lane_depart, right_lane_depart)
        self.lkascnt += 1
