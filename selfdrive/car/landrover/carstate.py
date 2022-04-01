@@ -136,7 +136,7 @@ class CarState(CarStateBase):
     ret.gas = 0
     ret.gasPressed = ret.gas > 1e-3
     ret.brakePressed = (cp.vl["CRUISE_CONTROL"]['DRIVER_BRAKE'] == 1)
-    ret.doorOpen = 0
+    #ret.doorOpen = 0
     ret.seatbeltUnlatched = (cp.vl["SEAT_BELT"]["SEAT_BELT_DRIVER"]  == 0)
 
     gear = cp.vl["GEAR_PRND"]["GEAR_SHIFT"]

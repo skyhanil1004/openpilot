@@ -43,7 +43,7 @@ def create_lkas_command(packer, lkas_run, frame, apply_steer, steer_req,
     "LKAS_GREEN" : 1
   }
 
-  msg = packer.make_can_msg("LKAS_RUN", 0, values)`
+  #msg = packer.make_can_msg("LKAS_RUN", 0, values)
 
   #       cs                cnt3  torq
   #       0      1     2     3     4
@@ -53,5 +53,5 @@ def create_lkas_command(packer, lkas_run, frame, apply_steer, steer_req,
   dat[3] = (((counter << 3) | ((torq & 0x700) >> 8)) | 0x80)
   dat[4] = torq & 0xFF
 
-  #return  packer.make_can_msg("LKAS_RUN", 0, values)
-  return make_can_msg(0x28F, dat, 0)
+  return  packer.make_can_msg("LKAS_RUN", 0, values)
+  #return make_can_msg(0x28F, dat, 0)
