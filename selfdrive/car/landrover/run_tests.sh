@@ -1,1 +1,1 @@
-PYTHONPATH=`realpath ../../../` python landrovercan_test.py
+PYTHONPATH=`realpath ../../../` python can_test.py

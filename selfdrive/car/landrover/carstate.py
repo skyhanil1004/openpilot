@@ -67,14 +67,13 @@ def get_cam_can_parser_landrover(CP):
     signals = [
       # sig_name, sig_address, default
       # TODO read in all the other values
-      ( "COUNTER", "LKAS_RUN", -1),
-      ( "COUNTER", "LKAS_RUN", 0),
-      ( "HIGH_TORQ", "LKAS_RUN", 0),
-      ( "LKAS_GREEN", "LKAS_RUN", 0),
       ( "ALLFFFF", "LKAS_RUN", 0),
-      ( "ALL11", "LKAS_RUN", 0),
       ( "A1", "LKAS_RUN", 0),
+      ( "HIGH_TORQ", "LKAS_RUN", 0),
+      ( "ALL11", "LKAS_RUN", 0),
+      ( "COUNTER", "LKAS_RUN", -1),
       ( "STEER_TORQ", "LKAS_RUN", 0),
+      ( "LKAS_GREEN", "LKAS_RUN", 0),
     ]
 
     checks = []

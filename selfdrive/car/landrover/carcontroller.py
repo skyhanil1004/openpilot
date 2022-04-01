@@ -72,9 +72,9 @@ class CarController():
 
     self.apply_steer_last = apply_steer
 
-    sys_warning, sys_state, left_lane_warning, right_lane_warning = \
-      process_hud_alert(enabled, self.CP.carFingerprint, visual_alert,
-                        left_lane, right_lane, left_lane_depart, right_lane_depart)
+    #sys_warning, sys_state, left_lane_warning, right_lane_warning = \
+    #  process_hud_alert(enabled, self.CP.carFingerprint, visual_alert,
+    #                    left_lane, right_lane, left_lane_depart, right_lane_depart)
 
     can_sends = []
 
@@ -87,11 +87,7 @@ class CarController():
        #can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, enabled, frame))
 
     if (frame % 2 == 0):
-       #new_msg = create_lkas_command(self.packer, int(apply_steer), self.gone_fast_yet, self.lkascnt)
-       new_msg = create_lkas_command(self.packer, CS.lkas_run, frame, apply_steer, lkas_active,
-                                 sys_warning, sys_state, enabled,
-                                left_lane, right_lane,
-                                left_lane_depart, right_lane_depart)
+       new_msg = create_lkas_command(self.packer, CS.lkas_run, frame, int(apply_steer))
        self.lkascnt += 1
        #cloudlog.warning("LANDROVER LKAS (%s)", new_msg)
        can_sends.append(new_msg)
