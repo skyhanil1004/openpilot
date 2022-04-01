@@ -2,6 +2,8 @@ from cereal import car
 import struct
 from selfdrive.car.landrover.lkas_tbl import find_steer_torq
 from selfdrive.car import make_can_msg
+import binascii
+import codecs
 
 # 15 all green
 # 1d left green, right white
@@ -46,6 +48,10 @@ def create_lkas_command(packer, lkas_run, frame, apply_steer): #,
   dat[3] = (((counter << 3) | ((torq & 0x700) >> 8)) | 0x80)
   dat[4] = torq & 0xFF
 
+  candat = binascii.hexlify(bytearray(dat))
+
   return  packer.make_can_msg("LKAS_RUN", 0, dat)
+  #return  make_can_msg(0x28F, codecs.decode(candat, 'hex'), 0)
+
   #return  packer.make_can_msg("LKAS_RUN", 0, values)
   #return make_can_msg(0x28F, dat, 0)
