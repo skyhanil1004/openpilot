@@ -50,8 +50,8 @@ def create_lkas_command(packer, lkas_run, frame, apply_steer): #,
 
   candat = binascii.hexlify(bytearray(dat))
 
-  return  packer.make_can_msg("LKAS_RUN", 0, dat)
-  #return  make_can_msg(0x28F, codecs.decode(candat, 'hex'), 0)
+  #return  packer.make_can_msg("LKAS_RUN", 0, dat)
+  return  make_can_msg(0x28F, codecs.decode(candat, 'hex'), 0)
 
   #return  packer.make_can_msg("LKAS_RUN", 0, values)
   #return make_can_msg(0x28F, dat, 0)
