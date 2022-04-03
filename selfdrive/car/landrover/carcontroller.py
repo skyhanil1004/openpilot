@@ -40,6 +40,7 @@ class CarController():
     self.packer = CANPacker(dbc_name)
 
     self.apply_steer_last = 0
+    self.ccframe = 0
     self.CP = CP
     self.steer_rate_limited = False
     self.last_resume_frame = 0
@@ -82,16 +83,17 @@ class CarController():
        if(frame % fr_step == 0):  # 25 0.25s period
            can_sends.append([addr, bus, vl, 0])
 
-    if (frame % 20 == 0):
+    if (self.ccframe % 20 == 0):
        can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, left_lane, right_lane, left_lane_depart, right_lane_depart ))
        #can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, enabled, frame))
 
-    if (frame % 2 == 0):
-       new_msg = create_lkas_command(self.packer, CS.lkas_run, frame, int(apply_steer))
+    if (self.ccframe % 2 == 0):
+       new_msg = create_lkas_command(self.packer, CS.lkas_run, self.lkascnt, int(apply_steer))
        self.lkascnt += 1
        #cloudlog.warning("LANDROVER LKAS (%s)", new_msg)
        can_sends.append(new_msg)
 
+    self.ccframe += 1
     self.prev_frame = frame
 
     new_actuators = actuators.copy()
