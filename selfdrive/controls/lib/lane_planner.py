@@ -9,14 +9,14 @@ from selfdrive.swaglog import cloudlog
 
 TRAJECTORY_SIZE = 33
 # camera offset is meters from center car to camera
-# model path is in the frame of the camera. Empirically 
+# model path is in the frame of the camera. Empirically
 # the model knows the difference between TICI and EON
 # so a path offset is not needed
 PATH_OFFSET = 0.00
 if EON:
   CAMERA_OFFSET = -0.06
 elif TICI:
-  CAMERA_OFFSET = 0.04
+  CAMERA_OFFSET = 0.03
 else:
   CAMERA_OFFSET = 0.0
 
@@ -90,7 +90,7 @@ class LanePlanner:
     self.lane_width = self.lane_width_certainty.x * self.lane_width_estimate.x + \
                       (1 - self.lane_width_certainty.x) * speed_lane_width
 
-    clipped_lane_width = min(4.0, self.lane_width)
+    clipped_lane_width = min(3.5, self.lane_width)
     path_from_left_lane = self.lll_y + clipped_lane_width / 2.0
     path_from_right_lane = self.rll_y - clipped_lane_width / 2.0
 

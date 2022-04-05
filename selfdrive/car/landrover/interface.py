@@ -32,7 +32,6 @@ class CarInterface(CarInterfaceBase):
     # added to selfdrive/test/test_routes, we can remove it from this list.
     ret.dashcamOnly = False #candidate in {CAR.KIA_OPTIMA_H, CAR.ELANTRA_GT_I30}
 
-    ret.steerActuatorDelay = 0.025      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
     ret.steerRateCost = 0.5
     ret.steerLimitTimer = 0.4
     tire_stiffness_factor = 0.5371   # hand-tun
@@ -46,14 +45,18 @@ class CarInterface(CarInterfaceBase):
 
     ret.longitudinalActuatorDelayUpperBound = 1.0 # s
 
-    ret.lateralTuning.pid.kf = 0.00005   # full torque for 10 deg at 80mph means 0.00007818594
     ret.mass = 2500. + STD_CARGO_KG  # kg curb weight Pacifica Hybrid 2017
     ret.wheelbase =  2.922  # in meters for rangerover vogue  2017
       # Values from optimizer
     #ret.steerRatio = 11.2
-    ret.steerRatio = 17.0
+    ret.steerActuatorDelay = 0.05      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
+    ret.lateralTuning.pid.kf = 0.00001   # full torque for 10 deg at 80mph means 0.00007818594
+    ret.steerRatio = 16.5
     ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 20.], [9., 20.]]
     ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.01,0.02], [0.0005,0.001]]
+    #GM
+    #ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[10., 41.0], [10., 41.0]]
+    #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.13, 0.24], [0.01, 0.02]]
     ret.minSteerSpeed = 1.8    # m/s
     ret.minEnableSpeed = -1.   # enable is done by stock ACC, so ignore this
 
@@ -63,9 +66,6 @@ class CarInterface(CarInterfaceBase):
     # mass and CG position, so all cars will have approximately similar dyn behaviors
     ret.tireStiffnessFront, ret.tireStiffnessRear = scale_tire_stiffness(ret.mass, ret.wheelbase, ret.centerToFront,
                                                                          tire_stiffness_factor=tire_stiffness_factor)
-
-
-
     return ret
 
   @staticmethod

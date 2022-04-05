@@ -153,8 +153,8 @@ class CarState(CarStateBase):
     ret.steeringTorque = cp.vl["EPS_04"]["STEER_TORQUE_EPS04"]
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
-
     # HANIL for landrover steers rate
+    """
     self.angle_steers_diff = float(ret.steeringAngleDeg - self.prev_angle_steers)
 
     if self.angle_steers_diff < 0.0:
@@ -164,7 +164,7 @@ class CarState(CarStateBase):
            self.angle_rate_multi = 4
 
     ret.steeringRateDeg *= self.angle_rate_multi
-
+    """
 
     ret.steeringTorque = cp.vl["EPS_03"]["STEER_TORQUE_DRIVER03"]
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD

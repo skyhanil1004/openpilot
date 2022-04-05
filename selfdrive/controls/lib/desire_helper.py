@@ -5,8 +5,10 @@ from common.realtime import DT_MDL
 LaneChangeState = log.LateralPlan.LaneChangeState
 LaneChangeDirection = log.LateralPlan.LaneChangeDirection
 
-LANE_CHANGE_SPEED_MIN = 30 * CV.MPH_TO_MS
-LANE_CHANGE_TIME_MAX = 10.
+#LANE_CHANGE_SPEED_MIN = 30 * CV.MPH_TO_MS
+LANE_CHANGE_SPEED_MIN = 8 * CV.MPH_TO_MS
+#LANE_CHANGE_TIME_MAX = 10.
+LANE_CHANGE_TIME_MAX = 7.
 
 DESIRES = {
   LaneChangeDirection.none: {
