@@ -12,6 +12,7 @@ def get_can_parser_landrover(CP):
     # sig_name, sig_address, default
     ("STEER_RATE00", "EPS_00", 0),
     ("STEER_ANGLE01", "EPS_01", 0),
+    ("STEER_ANGLE", "STEER_MOVING", 0),
     ("STEER_SPEED01", "EPS_01", 0),
     ("STEER_TORQUE_DRIVER02", "EPS_02", 0),
     ("STEER_TORQUE_MOTOR02", "EPS_02", 0),
@@ -139,7 +140,6 @@ class CarState(CarStateBase):
     ret.seatbeltUnlatched = (cp.vl["SEAT_BELT"]["SEAT_BELT_DRIVER"]  == 0)
 
     gear = cp.vl["GEAR_PRND"]["GEAR_SHIFT"]
-
     ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(gear))
 
     self.v_wheel = (cp.vl["SPEED_01"]["SPEED01"] + cp.vl["SPEED_02"]["SPEED02"]) / 2.
@@ -149,7 +149,8 @@ class CarState(CarStateBase):
     ret.standstill = not self.v_wheel > 0.001
 
     ret.steeringRateDeg = cp.vl["EPS_01"]["STEER_SPEED01"]
-    ret.steeringAngleDeg = cp.vl["EPS_01"]["STEER_ANGLE01"]
+    #ret.steeringAngleDeg = cp.vl["EPS_01"]["STEER_ANGLE01"]
+    ret.steeringAngleDeg = cp.vl["STEER_MOVING"]["STEER_ANGLE"]
     ret.steeringTorque = cp.vl["EPS_04"]["STEER_TORQUE_EPS04"]
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 

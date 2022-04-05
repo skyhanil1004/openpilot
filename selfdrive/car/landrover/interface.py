@@ -49,14 +49,11 @@ class CarInterface(CarInterfaceBase):
     ret.wheelbase =  2.922  # in meters for rangerover vogue  2017
       # Values from optimizer
     #ret.steerRatio = 11.2
-    ret.steerActuatorDelay = 0.05      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
+    ret.steerRatio = 18.5
+    ret.steerActuatorDelay = 0.03      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
     ret.lateralTuning.pid.kf = 0.00001   # full torque for 10 deg at 80mph means 0.00007818594
-    ret.steerRatio = 16.5
     ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 20.], [9., 20.]]
     ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.01,0.02], [0.0005,0.001]]
-    #GM
-    #ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[10., 41.0], [10., 41.0]]
-    #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.13, 0.24], [0.01, 0.02]]
     ret.minSteerSpeed = 1.8    # m/s
     ret.minEnableSpeed = -1.   # enable is done by stock ACC, so ignore this
 
