@@ -2,7 +2,7 @@ from cereal import car
 from common.realtime import DT_CTRL
 from common.numpy_fast import clip, interp
 from selfdrive.config import Conversions as CV
-from selfdrive.car import apply_std_steer_torque_limits
+from selfdrive.car import apply_std_steer_torque_limits, apply_toyota_steer_torque_limits
 from selfdrive.car.landrover.landrovercan import create_lkas_command, create_lkas_hud
 from selfdrive.car.landrover.values import CarControllerParams, CAR, STATIC_MSGS
 from opendbc.can.packer import CANPacker
@@ -63,7 +63,8 @@ class CarController():
     new_steer = int(round(actuators.steer * 1024))
     #new_steer = int(round(actuators.steer * self.p.STEER_MAX))
     #new_steer = int(round(actuators.steer * 150))
-    apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, self.p)
+    #apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, self.p)
+    apply_steer = apply_toyota_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, self.p)
     self.steer_rate_limited = new_steer != apply_steer
 
     # disable when temp fault is active, or below LKA minimum speed

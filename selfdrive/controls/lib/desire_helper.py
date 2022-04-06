@@ -5,10 +5,10 @@ from common.realtime import DT_MDL
 LaneChangeState = log.LateralPlan.LaneChangeState
 LaneChangeDirection = log.LateralPlan.LaneChangeDirection
 
-#LANE_CHANGE_SPEED_MIN = 30 * CV.MPH_TO_MS
-LANE_CHANGE_SPEED_MIN = 8 * CV.MPH_TO_MS
-#LANE_CHANGE_TIME_MAX = 10.
-LANE_CHANGE_TIME_MAX = 7.
+LANE_CHANGE_SPEED_MIN = 30 * CV.MPH_TO_MS
+#LANE_CHANGE_SPEED_MIN = 8 * CV.MPH_TO_MS
+LANE_CHANGE_TIME_MAX = 10.
+#LANE_CHANGE_TIME_MAX = 7.
 
 DESIRES = {
   LaneChangeDirection.none: {
@@ -66,8 +66,9 @@ class DesireHelper:
                          ((carstate.steeringTorque > 0 and self.lane_change_direction == LaneChangeDirection.left) or
                           (carstate.steeringTorque < 0 and self.lane_change_direction == LaneChangeDirection.right))
 
-        blindspot_detected = ((carstate.leftBlindspot and self.lane_change_direction == LaneChangeDirection.left) or
-                              (carstate.rightBlindspot and self.lane_change_direction == LaneChangeDirection.right))
+        blindspot_detected = False
+        #blindspot_detected = ((carstate.leftBlindspot and self.lane_change_direction == LaneChangeDirection.left) or
+        #                      (carstate.rightBlindspot and self.lane_change_direction == LaneChangeDirection.right))
 
         if not one_blinker or below_lane_change_speed:
           self.lane_change_state = LaneChangeState.off
