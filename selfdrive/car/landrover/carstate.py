@@ -16,7 +16,7 @@ def get_can_parser_landrover(CP):
     ("STEER_TORQUE_DRIVER02", "EPS_02", 0),
     ("STEER_TORQUE_MOTOR02", "EPS_02", 0),
     ("STEER_TORQUE_DRIVER03", "EPS_03", 0),
-    ("STEER_TORQUE_EPS04", "EPS_04", 0),
+    ("STEER_TQ", "EPS_04", 0),
     ("GEAR_SHIFT", "GEAR_PRND", 0),
     ("CRUISE_ON", "CRUISE_CONTROL", 0),
     ("DRIVER_BRAKE", "CRUISE_CONTROL", 0),
@@ -149,7 +149,7 @@ class CarState(CarStateBase):
 
     ret.steeringRateDeg = cp.vl["EPS_01"]["STEER_SPEED01"]
     ret.steeringAngleDeg = cp.vl["EPS_01"]["STEER_ANGLE01"]
-    ret.steeringTorque = cp.vl["EPS_04"]["STEER_TORQUE_EPS04"]
+    ret.steeringTorque = cp.vl["EPS_04"]["STEER_TQ"]
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
     # HANIL for landrover steers rate
