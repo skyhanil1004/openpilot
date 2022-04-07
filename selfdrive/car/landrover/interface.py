@@ -32,8 +32,6 @@ class CarInterface(CarInterfaceBase):
     # added to selfdrive/test/test_routes, we can remove it from this list.
     ret.dashcamOnly = False #candidate in {CAR.KIA_OPTIMA_H, CAR.ELANTRA_GT_I30}
 
-    ret.steerActuatorDelay = 0.05      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
-    ret.steerRatio = 17.5
 
     ret.steerRateCost = 0.5
     ret.steerLimitTimer = 0.4
@@ -47,6 +45,8 @@ class CarInterface(CarInterfaceBase):
     ret.stopAccel = 0.0
     ret.longitudinalActuatorDelayUpperBound = 1.0 # s
 
+    ret.steerRatio = 15.5
+    ret.steerActuatorDelay = 0.02      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
     ret.lateralTuning.pid.kf = 0.00005   # full torque for 10 deg at 80mph means 0.00007818594
     ret.mass = 2500. + STD_CARGO_KG  # kg curb weight Pacifica Hybrid 2017
     ret.wheelbase =  2.922  # in meters for rangerover vogue  2017
