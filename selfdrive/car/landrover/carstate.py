@@ -143,7 +143,7 @@ class CarState(CarStateBase):
 
     self.v_wheel = (cp.vl["SPEED_01"]["SPEED01"] + cp.vl["SPEED_02"]["SPEED02"]) / 2.
 
-    ret.vEgoRaw = self.v_wheel
+    ret.vEgoRaw = self.v_wheel # * CV.KPH_TO_MS
     ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
     ret.standstill = not self.v_wheel > 0.001
 

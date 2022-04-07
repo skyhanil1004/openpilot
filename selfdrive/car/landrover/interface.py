@@ -32,7 +32,7 @@ class CarInterface(CarInterfaceBase):
     # added to selfdrive/test/test_routes, we can remove it from this list.
     ret.dashcamOnly = False #candidate in {CAR.KIA_OPTIMA_H, CAR.ELANTRA_GT_I30}
 
-    ret.steerActuatorDelay = 0.08      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
+    ret.steerActuatorDelay = 0.025      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
     ret.steerRatio = 17.5
 
     ret.steerRateCost = 0.5

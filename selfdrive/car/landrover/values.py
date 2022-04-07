@@ -9,6 +9,7 @@ class CarControllerParams:
 
   def __init__(self, CP):
     self.STEER_MAX = 1023
+    self.STEER_ERROR_MAX = 1023
     self.STEER_DELTA_UP = 5
     self.STEER_DELTA_DOWN = 10
     self.STEER_DRIVER_ALLOWANCE = 50
