@@ -69,7 +69,7 @@ class PIController():
     self.control = clip(control, self.neg_limit, self.pos_limit)
     return self.control
 
-class LatPIDController(PIDController):
+class LatPIDController(PIController):
   @property
   def k_p(self):
     return self.op_params.get('lat_p')
