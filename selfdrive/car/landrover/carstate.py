@@ -181,20 +181,13 @@ class CarState(CarStateBase):
     # TODO find
     #ret.aBasis = cp.vl["TCS13"]["aBasis"]  ??
     #ret.yawRate = cp.vl["ESP12"]["YAW_RATE"]
-    #ret.steeringTorqueEps = cp_mdps.vl["MDPS12"]["CR_Mdps_OutTq"] / 10.  # scale to Nm
+    ret.steeringTorqueEps = cp_mdps.vl["EPS_02"]["STEER_TORQUE_DRIVER02"] / 10.  # scale to Nm
 
     ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["TURN_SIGNAL"]["LEFT_BLINK"],cp.vl["TURN_SIGNAL"]["RIGHT_BLINK"])
     #ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_stalk(50, cp.vl["TURN_SIGNAL"]["LEFT_TURN"],cp.vl["TURN_SIGNAL"]["RIGHT_TURN"])
 
     ret.steeringTorque = cp.vl["EPS_02"]["STEER_TORQUE_DRIVER02"]
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
-
-    if not ret.standstill and cp_mdps.vl["MDPS12"]["CF_Mdps_ToiUnavail"] != 0:
-      self.mdps_error_cnt += 1
-    else:
-      self.mdps_error_cnt = 0
-
-    ret.steerFaultTemporary = self.mdps_error_cnt > 50
 
     if self.CP.enableAutoHold:
       ret.autoHold = cp.vl["ESP11"]["AVH_STAT"]
