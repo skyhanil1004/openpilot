@@ -143,12 +143,13 @@ class CarState(CarStateBase):
     ret.seatbeltUnlatched = (cp.vl["SEAT_BELT"]["SEAT_BELT_DRIVER"]  == 0)
 
     self.is_set_speed_in_mph = False
-    self.speed_conv_to_ms = CV.MPH_TO_MS 
-    ##self.speed_conv_to_ms = CV.KPH_TO_MS
+    #self.speed_conv_to_ms = CV.MPH_TO_MS 
+    self.speed_conv_to_ms = CV.KPH_TO_MS
 
     cluSpeed = cp.vl["SPEED_01"]["SPEED01"]
 
-    ret.cluSpeedMs = cluSpeed * self.speed_conv_to_ms
+    #ret.cluSpeedMs = cluSpeed * self.speed_conv_to_ms
+    ret.cluSpeedMs = cluSpeed
 
     ret.wheelSpeeds = self.get_wheel_speeds(
       cp.vl["SPEED_01"]["SPEED01"],

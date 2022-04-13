@@ -11,6 +11,7 @@ from common.conversions import Conversions as CV
 from selfdrive.controls.lib.drive_helpers import V_CRUISE_MAX
 from selfdrive.controls.lib.events import Events
 from selfdrive.controls.lib.vehicle_model import VehicleModel
+from selfdrive.swaglog import cloudlog
 
 GearShifter = car.CarState.GearShifter
 EventName = car.CarEvent.EventName
@@ -152,6 +153,7 @@ class CarInterfaceBase(ABC):
 
     # we engage when pcm is active (rising edge)
     if pcm_enable:
+      cloudlog.warning("pcm_enable (%d) %d", cs_out.cruiseState.enabled, self.CS.out.cruiseState.enabled)
       if cs_out.cruiseState.enabled and not self.CS.out.cruiseState.enabled:
         events.add(EventName.pcmEnable)
       elif not cs_out.cruiseState.enabled:
