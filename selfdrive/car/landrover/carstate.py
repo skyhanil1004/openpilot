@@ -66,7 +66,7 @@ def get_can_parser_landrover(CP):
     ("TURN_SIGNAL", 0),
   ]
 
-  return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 0)
+  return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 0, enforce_checks=    False)
 
 def get_cam_can_parser_landrover(CP):
     signals = [
@@ -83,7 +83,7 @@ def get_cam_can_parser_landrover(CP):
 
     checks = []
 
-    return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2)
+    return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2, enforce_checks=    False)
 
 def parse_gear_shifter(can_gear):
   if can_gear == 0x0:
@@ -130,7 +130,7 @@ class CarState(CarStateBase):
     self.long_control_enabled = False
     self.mdps_bus = 2
 
-  def update(self, cp, cp2, cp_cam):
+  def update(self, cp, cp_cam):
     cp_mdps = cp
 
     self.prev_cruise_buttons = self.cruise_buttons
@@ -143,7 +143,8 @@ class CarState(CarStateBase):
     ret.seatbeltUnlatched = (cp.vl["SEAT_BELT"]["SEAT_BELT_DRIVER"]  == 0)
 
     self.is_set_speed_in_mph = False
-    self.speed_conv_to_ms = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
+    self.speed_conv_to_ms = CV.MPH_TO_MS 
+    ##self.speed_conv_to_ms = CV.KPH_TO_MS
 
     cluSpeed = cp.vl["SPEED_01"]["SPEED01"]
 
@@ -156,20 +157,20 @@ class CarState(CarStateBase):
       cp.vl["SPEED_02"]["SPEED02"],
     )
 
-    vEgoRawWheel = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4.
+    vEgoRawWheel = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4.  * 3.8
     vEgoWheel, aEgoWheel = self.update_speed_kf(vEgoRawWheel)
 
     vEgoRawClu = cluSpeed * self.speed_conv_to_ms
     vEgoClu, aEgoClu = self.update_clu_speed_kf(vEgoRawClu)
 
-    if self.use_cluster_speed:
-      ret.vEgoRaw = vEgoRawClu
-      ret.vEgo = vEgoClu
-      ret.aEgo = aEgoClu
-    else:
-      ret.vEgoRaw = vEgoRawWheel
-      ret.vEgo = vEgoWheel
-      ret.aEgo = aEgoWheel
+    #if self.use_cluster_speed:
+    #  ret.vEgoRaw = vEgoRawClu
+    #  ret.vEgo = vEgoClu
+    #  ret.aEgo = aEgoClu
+    #else:
+    ret.vEgoRaw = vEgoRawWheel
+    ret.vEgo = vEgoWheel
+    ret.aEgo = aEgoWheel
 
     ret.vCluRatio = (vEgoWheel / vEgoClu) if (vEgoClu > 3. and vEgoWheel > 3.) else 1.0
 
@@ -200,8 +201,7 @@ class CarState(CarStateBase):
     ret.cruiseState.enabledAcc = ret.cruiseState.enabled
 
     if ret.cruiseState.enabled:
-      ret.cruiseState.speed = cp_scc.vl["SCC11"]["VSetDis"] * self.speed_conv_to_ms if not self.no_radar else \
-                                         cp.vl["LVR12"]["CF_Lvr_CruiseSet"] * self.speed_conv_to_ms
+      ret.cruiseState.speed = round(cp.vl["CRUISE_CONTROL"]['SPEED_CRUISE_RESUME']) * CV.KPH_TO_MS
     else:
       ret.cruiseState.speed = 0
     #self.cruise_main_button = cp.vl["CLU11"]["CF_Clu_CruiseSwMain"]
@@ -210,8 +210,8 @@ class CarState(CarStateBase):
     # TODO: Find brake pressure
     ret.brake = 0
     ret.brakePressed = (cp.vl["CRUISE_CONTROL"]["DRIVER_BRAKE"] == 1)
-    ret.brakeHoldActive = 0
-    ret.parkingBrake = 0
+    ret.brakeHoldActive = False
+    ret.parkingBrake = False
 
     # TODO: Check this
     ret.brakeLights = ret.brakePressed
@@ -227,8 +227,8 @@ class CarState(CarStateBase):
     ret.leftBlindspot = False
     ret.rightBlindspot = False
 
-    self.lkas_run = copy.copy(cp_cam.vl["LKAS_RUN"])
-    self.lkas_status = copy.copy(cp_cam.vl["LKAS_STATUS"])
+    self.lkas_run = cp_cam.vl["LKAS_RUN"]
+    self.lkas_status = cp_cam.vl["LKAS_STATUS"]
 
     self.lkas_counter = cp_cam.vl["LKAS_RUN"]['COUNTER']
     return ret

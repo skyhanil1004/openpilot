@@ -178,6 +178,7 @@ def get_car(logcan, sendcan):
     cloudlog.warning("car doesn't match any fingerprints: %r", fingerprints)
     candidate = "mock"
 
+  candidate = "LANDROVER RangeRover Vogue 2017"
   disable_radar = Params().get_bool("DisableRadar")
 
   selected_car = Params().get("SelectedCar")

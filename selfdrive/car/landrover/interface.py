@@ -2,12 +2,15 @@
 from cereal import car
 from panda import Panda
 from common.params import Params
+from selfdrive.controls.lib.desire_helper import LANE_CHANGE_SPEED_MIN
 from common.conversions import Conversions as CV
 from selfdrive.car.landrover.values import CAR, CarControllerParams
 #from selfdrive.car.landrover.radar_interface import RADAR_START_ADDR
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, gen_empty_fingerprint, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 from selfdrive.car.disable_ecu import disable_ecu
+
+EventName = car.CarEvent.EventName
 
 class CarInterface(CarInterfaceBase):
   def __init__(self, CP, CarController, CarState):
@@ -111,7 +114,7 @@ class CarInterface(CarInterfaceBase):
 
     # set safety_hyundai_community only for non-SCC, MDPS harrness or SCC harrness cars or cars that have unknown issue
     if Params().get_bool('MadModeEnabled'):
-      ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.landroverCommunity, 0)]
+      ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.landrover, 0)]
     return ret
 
 
@@ -199,5 +202,5 @@ class CarInterface(CarInterfaceBase):
     return self.CS.out
 
 
-  def apply(self, c):
+  def apply(self, c, controls):
     return self.CC.update(c, self.CS, controls)

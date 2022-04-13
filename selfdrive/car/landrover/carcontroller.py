@@ -6,7 +6,7 @@ from common.numpy_fast import clip, interp
 from selfdrive.car import apply_std_steer_torque_limits
 from selfdrive.car.landrover.landrovercan import create_lkas_command, create_lkas_hud
 from selfdrive.car.landrover.scc_smoother import SccSmoother
-from selfdrive.car.landrover.values import CAR, CarControllerParams
+from selfdrive.car.landrover.values import CAR, CarControllerParams, STATIC_MSGS
 from opendbc.can.packer import CANPacker
 from common.conversions import Conversions as CV
 from common.params import Params
@@ -65,6 +65,7 @@ class CarController:
     param = Params()
 
     self.mad_mode_enabled = param.get_bool('MadModeEnabled')
+    self.keep_steering_turn_signals = param.get_bool('KeepSteeringTurnSignals')
 
     self.scc_smoother = SccSmoother()
     self.last_blinker_frame = 0
@@ -78,6 +79,7 @@ class CarController:
 
     self.steer_fault_max_angle = CP.steerFaultMaxAngle
     self.steer_fault_max_frames = CP.steerFaultMaxFrames
+    self.lkascnt = 0
 
   def update(self, CC, CS, controls):
     actuators = CC.actuators
@@ -89,7 +91,8 @@ class CarController:
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, self.params)
 
     # disable when temp fault is active, or below LKA minimum speed
-    lkas_active = enabled and not CS.out.steerFaultTemporary and CS.out.vEgo     >= CS.CP.minSteerSpeed
+    lkas_active = CC.latActive
+    #lkas_active = enabled and not CS.out.steerFaultTemporary and CS.out.vEgo     >= CS.CP.minSteerSpeed
 
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.out.leftBlinker or CS.out.rightBlinker:
@@ -106,10 +109,9 @@ class CarController:
 
     sys_warning, sys_state, left_lane_warning, right_lane_warning = process_hud_alert(CC.enabled, self.car_fingerprint, hud_control)
 
-    enabled_speed = 38 if CS.is_set_speed_in_mph else 60
-
-    if clu11_speed > enabled_speed or not lkas_active:
-      enabled_speed = clu11_speed
+    #enabled_speed = 38 if CS.is_set_speed_in_mph else 60
+    #if clu11_speed > enabled_speed or not lkas_active:
+    #  enabled_speed = clu11_speed
 
 
     cut_steer_temp = False
@@ -137,26 +139,23 @@ class CarController:
     can_sends = []
 
     for (addr, ecu, cars, bus, fr_step, vl) in STATIC_MSGS:
-       if(frame % fr_step == 0):  # 25 0.25s period
+       if(self.frame % fr_step == 0):  # 25 0.25s period
            can_sends.append([addr, bus, vl, 0])
 
-    if (self.ccframe % 20 == 0):
-       can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, left_lane, right_lane, left_lane_depart, right_lane_depart ))
+    if (self.frame % 20 == 0):
+       can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, hud_control.leftLaneVisible, hud_control.rightLaneVisible, left_lane_warning, right_lane_warning ))
        #can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, enabled, frame))
 
-    if (self.ccframe % 2 == 0):
+    if (self.frame % 2 == 0):
        new_msg = create_lkas_command(self.packer, CS.lkas_run, self.lkascnt, int(apply_steer))
        self.lkascnt += 1
        #cloudlog.warning("LANDROVER LKAS (%s)", new_msg)
        can_sends.append(new_msg)
 
-    self.ccframe += 1
-    self.prev_frame = frame
+    self.frame += 1
 
     new_actuators = actuators.copy()
-    new_actuators.steer = apply_steer / self.p.STEER_MAX
-
-    return new_actuators, can_sends
+    new_actuators.steer = apply_steer / self.params.STEER_MAX
 
     return new_actuators, can_sends
 
