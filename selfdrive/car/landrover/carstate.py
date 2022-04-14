@@ -146,10 +146,10 @@ class CarState(CarStateBase):
     ret.seatbeltUnlatched = (cp.vl["SEAT_BELT"]["SEAT_BELT_DRIVER"]  == 0)
 
     self.is_set_speed_in_mph = False
-    #self.speed_conv_to_ms = CV.MPH_TO_MS 
-    self.speed_conv_to_ms = CV.KPH_TO_MS
+    #self.speed_conv_to_ms = CV.MPH_TO_MS  # * 1.6093
+    self.speed_conv_to_ms = CV.KPH_TO_MS  # * 1
 
-    cluSpeed = cp.vl["SPEED_01"]["SPEED01"] / 3.8
+    cluSpeed = cp.vl["SPEED_01"]["SPEED01"]
 
     #ret.cluSpeedMs = cluSpeed * self.speed_conv_to_ms
     ret.cluSpeedMs = cluSpeed
@@ -161,7 +161,7 @@ class CarState(CarStateBase):
       cp.vl["SPEED_02"]["SPEED02"],
     )
 
-    vEgoRawWheel = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4 /3.8
+    vEgoRawWheel = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4
     vEgoWheel, aEgoWheel = self.update_speed_kf(vEgoRawWheel)
 
     vEgoRawClu = cluSpeed * self.speed_conv_to_ms

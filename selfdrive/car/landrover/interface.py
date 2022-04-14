@@ -41,8 +41,8 @@ class CarInterface(CarInterfaceBase):
 
     ret.steerRatio = 12.5
     ret.steerActuatorDelay = 0.011      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
-    ret.steerRatio = 15.5
-    ret.steerActuatorDelay = 0.02      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
+    #ret.steerRatio = 15.5
+    #ret.steerActuatorDelay = 0.02      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
     ret.lateralTuning.pid.kf = 0.00005   # full torque for 10 deg at 80mph means 0.00007818594
 
 
@@ -50,15 +50,11 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.kpV = [0.0]
     ret.longitudinalTuning.kiV = [0.0]
 
-
-
     # PID
-    """
     ret.lateralTuning.pid.kf = 0.00005   # full torque for 10 deg at 80mph means 0.00007818594
 
     ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 20.], [9., 20.]]
     ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.01,0.02], [0.0005,0.001]]
-    """
 
     # LQR EQ9000
     """
