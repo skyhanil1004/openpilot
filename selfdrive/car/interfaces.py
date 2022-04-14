@@ -153,8 +153,8 @@ class CarInterfaceBase(ABC):
 
     # we engage when pcm is active (rising edge)
     if pcm_enable:
-      cloudlog.warning("pcm_enable (%d) %d", cs_out.cruiseState.enabled, self.CS.out.cruiseState.enabled)
-      if cs_out.cruiseState.enabled and not self.CS.out.cruiseState.enabled:
+      #if cs_out.cruiseState.enabled and not self.CS.out.cruiseState.enabled:
+      if cs_out.cruiseState.enabled:
         events.add(EventName.pcmEnable)
       elif not cs_out.cruiseState.enabled:
         events.add(EventName.pcmDisable)

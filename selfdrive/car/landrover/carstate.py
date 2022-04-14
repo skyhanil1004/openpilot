@@ -5,6 +5,7 @@ from opendbc.can.parser import CANParser
 from opendbc.can.can_define import CANDefine
 from common.conversions import Conversions as CV
 from common.params import Params
+from selfdrive.swaglog import cloudlog
 
 GearShifter = car.CarState.GearShifter
 
@@ -21,6 +22,7 @@ def get_can_parser_landrover(CP):
     ("STEER_TQ", "EPS_04", 0),
     ("GEAR_SHIFT", "GEAR_PRND", 0),
     ("CRUISE_ON", "CRUISE_CONTROL", 0),
+    ("CR00", "Cr_ready", 0),
     ("DRIVER_BRAKE", "CRUISE_CONTROL", 0),
     ("SPEED_CRUISE_RESUME", "CRUISE_CONTROL", 1),
     ("ACCELATOR_DRIVER", "ACCELATOR_DRIVER", 0),
@@ -59,6 +61,7 @@ def get_can_parser_landrover(CP):
     ("SPEED_03", 0),
     ("SPEED_04", 0),
     ("CRUISE_CONTROL", 1),
+    ("CR00", 100),
     ("SEAT_BELT", 0),
     ("LKAS_HUD_STAT", 0),
     ("HEAD_LIGHT", 0),
@@ -158,7 +161,7 @@ class CarState(CarStateBase):
       cp.vl["SPEED_02"]["SPEED02"],
     )
 
-    vEgoRawWheel = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4.  * 3.8
+    vEgoRawWheel = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4.
     vEgoWheel, aEgoWheel = self.update_speed_kf(vEgoRawWheel)
 
     vEgoRawClu = cluSpeed * self.speed_conv_to_ms
@@ -183,20 +186,20 @@ class CarState(CarStateBase):
     # TODO find
     #ret.aBasis = cp.vl["TCS13"]["aBasis"]  ??
     #ret.yawRate = cp.vl["ESP12"]["YAW_RATE"]
-    ret.steeringTorqueEps = cp_mdps.vl["EPS_02"]["STEER_TORQUE_DRIVER02"] / 10.  # scale to Nm
+    ret.steeringTorqueEps = cp.vl["EPS_02"]["STEER_TORQUE_MOTOR02"] / 10.  # scale to Nm
 
     ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["TURN_SIGNAL"]["LEFT_BLINK"],cp.vl["TURN_SIGNAL"]["RIGHT_BLINK"])
     #ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_stalk(50, cp.vl["TURN_SIGNAL"]["LEFT_TURN"],cp.vl["TURN_SIGNAL"]["RIGHT_TURN"])
 
-    ret.steeringTorque = cp.vl["EPS_02"]["STEER_TORQUE_DRIVER02"]
+    ret.steeringTorque = cp.vl["EPS_03"]["STEER_TORQUE_DRIVER03"]
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
     if self.CP.enableAutoHold:
       ret.autoHold = cp.vl["ESP11"]["AVH_STAT"]
 
     # cruise state
-    ret.cruiseState.enabled = cp.vl["CRUISE_CONTROL"]["CRUISE_ON"] == 1
-    ret.cruiseState.available = True
+    ret.cruiseState.enabled = (cp.vl["CRUISE_CONTROL"]["CRUISE_ON"] == 1)
+    ret.cruiseState.available = (cp.vl["CR00"]["Cr_ready"] != 0)
     ret.cruiseState.standstill = False
 
     ret.cruiseState.enabledAcc = ret.cruiseState.enabled

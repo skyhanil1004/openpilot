@@ -115,6 +115,8 @@ class CarInterface(CarInterfaceBase):
     # set safety_hyundai_community only for non-SCC, MDPS harrness or SCC harrness cars or cars that have unknown issue
     if Params().get_bool('MadModeEnabled'):
       ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.landrover, 0)]
+
+
     return ret
 
 
