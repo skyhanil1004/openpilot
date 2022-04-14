@@ -22,7 +22,7 @@ def get_can_parser_landrover(CP):
     ("STEER_TQ", "EPS_04", 0),
     ("GEAR_SHIFT", "GEAR_PRND", 0),
     ("CRUISE_ON", "CRUISE_CONTROL", 0),
-    ("CR00", "Cr_ready", 0),
+    ("Cruise_ready", "CR00", 0),
     ("DRIVER_BRAKE", "CRUISE_CONTROL", 0),
     ("SPEED_CRUISE_RESUME", "CRUISE_CONTROL", 1),
     ("ACCELATOR_DRIVER", "ACCELATOR_DRIVER", 0),
@@ -149,7 +149,7 @@ class CarState(CarStateBase):
     #self.speed_conv_to_ms = CV.MPH_TO_MS 
     self.speed_conv_to_ms = CV.KPH_TO_MS
 
-    cluSpeed = cp.vl["SPEED_01"]["SPEED01"]
+    cluSpeed = cp.vl["SPEED_01"]["SPEED01"] / 3.8
 
     #ret.cluSpeedMs = cluSpeed * self.speed_conv_to_ms
     ret.cluSpeedMs = cluSpeed
@@ -161,7 +161,7 @@ class CarState(CarStateBase):
       cp.vl["SPEED_02"]["SPEED02"],
     )
 
-    vEgoRawWheel = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4.
+    vEgoRawWheel = (ret.wheelSpeeds.fl + ret.wheelSpeeds.fr + ret.wheelSpeeds.rl + ret.wheelSpeeds.rr) / 4 /3.8
     vEgoWheel, aEgoWheel = self.update_speed_kf(vEgoRawWheel)
 
     vEgoRawClu = cluSpeed * self.speed_conv_to_ms
@@ -194,12 +194,12 @@ class CarState(CarStateBase):
     ret.steeringTorque = cp.vl["EPS_03"]["STEER_TORQUE_DRIVER03"]
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
-    if self.CP.enableAutoHold:
-      ret.autoHold = cp.vl["ESP11"]["AVH_STAT"]
+    #if self.CP.enableAutoHold:
+    #  ret.autoHold = cp.vl["ESP11"]["AVH_STAT"]
 
     # cruise state
     ret.cruiseState.enabled = (cp.vl["CRUISE_CONTROL"]["CRUISE_ON"] == 1)
-    ret.cruiseState.available = (cp.vl["CR00"]["Cr_ready"] != 0)
+    ret.cruiseState.available = (cp.vl["CR00"]["Cruise_ready"] != 0)
     ret.cruiseState.standstill = False
 
     ret.cruiseState.enabledAcc = ret.cruiseState.enabled

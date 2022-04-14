@@ -2,7 +2,7 @@ from cereal import car
 from selfdrive.car import dbc_dict
 Ecu = car.CarParams.Ecu
 
-STEER_THRESHOLD = 250
+STEER_THRESHOLD = 550
 # Steer torque limits
 class CarControllerParams:
   ACCEL_MIN = -3.5 # m/s
