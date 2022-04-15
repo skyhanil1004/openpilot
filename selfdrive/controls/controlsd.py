@@ -32,7 +32,8 @@ from selfdrive.car.hyundai.scc_smoother import SccSmoother
 from selfdrive.ntune import ntune_common_get, ntune_common_enabled, ntune_scc_get
 
 SOFT_DISABLE_TIME = 3  # seconds
-LDW_MIN_SPEED = 31 * CV.MPH_TO_MS
+#LDW_MIN_SPEED = 31 * CV.MPH_TO_MS   # * 1.60934
+LDW_MIN_SPEED = 7 * CV.MPH_TO_MS   # * 1.60934
 LANE_DEPARTURE_THRESHOLD = 0.1
 
 REPLAY = "REPLAY" in os.environ
@@ -575,6 +576,8 @@ class Controls:
     CC.latActive = self.active and not CS.steerFaultTemporary and not CS.steerFaultPermanent and \
                      CS.vEgo > self.CP.minSteerSpeed and not CS.standstill \
                    and abs(CS.steeringAngleDeg) < self.CP.maxSteeringAngleDeg
+
+    cloudlog.warning("active %d  vEgo %f > %f  standstill %d  angle %d < %d", self.active, CS.vEgo, self.CP.minSteerSpeed, CS.standstill,abs(CS.steeringAngleDeg), self.CP.maxSteeringAngleDeg)
     CC.longActive = self.active and self.state != State.overriding
 
     actuators = CC.actuators

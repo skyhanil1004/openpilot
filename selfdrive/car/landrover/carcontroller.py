@@ -12,6 +12,8 @@ from common.conversions import Conversions as CV
 from common.params import Params
 from selfdrive.controls.lib.longcontrol import LongCtrlState
 from selfdrive.road_speed_limiter import road_speed_limiter_get_active
+from selfdrive.swaglog import cloudlog
+
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 min_set_speed = 30 * CV.KPH_TO_MS
@@ -55,6 +57,7 @@ class CarController:
     self.resume_cnt = 0
     self.last_lead_distance = 0
     self.resume_wait_timer = 0
+    self.latActive = 1
 
     self.turning_signal_timer = 0
     self.longcontrol = CP.openpilotLongitudinalControl
@@ -90,20 +93,29 @@ class CarController:
     new_steer = int(round(actuators.steer * self.params.STEER_MAX))
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, self.params)
 
+    cloudlog.warning("app_steer %d actuators %d",  apply_steer, actuators.steer)
+
     # disable when temp fault is active, or below LKA minimum speed
-    lkas_active = CC.latActive
-    #lkas_active = enabled and not CS.out.steerFaultTemporary and CS.out.vEgo     >= CS.CP.minSteerSpeed
+    enabled  = CS.out.cruiseState.enabled
+    self.latActive  = CS.out.cruiseState.available
+    lkas_active = enabled and not CS.out.steerFaultTemporary #and CS.out.vEgo >= CS.CP.minSteerSpeed
+    cloudlog.warning("a %d %d %d %d", lkas_active, enabled, CS.out.steerFaultTemporary, CS.out.vEgo)
 
     # Disable steering while turning blinker on and speed below 60 kph
     if CS.out.leftBlinker or CS.out.rightBlinker:
       self.turning_signal_timer = 0.5 / DT_CTRL  # Disable for 0.5 Seconds after blinker turned off
     if self.turning_indicator_alert: # set and clear by interface
       lkas_active = 0
+      cloudlog.warning("b %d %d", lkas_active, apply_steer)
     if self.turning_signal_timer > 0:
       self.turning_signal_timer -= 1
 
     if not lkas_active:
       apply_steer = 0
+      cloudlog.warning("c %d %d", lkas_active, apply_steer)
+
+
+    cloudlog.warning("lkas_active %d %d", lkas_active, apply_steer)
 
     self.apply_steer_last = apply_steer
 

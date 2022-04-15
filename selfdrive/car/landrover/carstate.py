@@ -22,9 +22,10 @@ def get_can_parser_landrover(CP):
     ("STEER_TQ", "EPS_04", 0),
     ("GEAR_SHIFT", "GEAR_PRND", 0),
     ("CRUISE_ON", "CRUISE_CONTROL", 0),
+    ("ACC_RESUME_BTTN", "CRUISE_CONTROL", 0),
     ("Cruise_ready", "CR00", 0),
     ("DRIVER_BRAKE", "CRUISE_CONTROL", 0),
-    ("SPEED_CRUISE_RESUME", "CRUISE_CONTROL", 1),
+    ("SPEED_CRUISE_RESUME", "CRUISE_CONTROL", 0),
     ("ACCELATOR_DRIVER", "ACCELATOR_DRIVER", 0),
     ("SEAT_BELT_DRIVER", "SEAT_BELT", 0),
     ("RIGHT_TURN", "TURN_SIGNAL", 0),
@@ -117,6 +118,7 @@ class CarState(CarStateBase):
     self.cruise_main_button = 0
     self.mdps_error_cnt = 0
     self.cruise_unavail_cnt = 0
+    self.latActive = 0
 
     self.apply_steer = 0.
 
@@ -191,7 +193,7 @@ class CarState(CarStateBase):
     ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["TURN_SIGNAL"]["LEFT_BLINK"],cp.vl["TURN_SIGNAL"]["RIGHT_BLINK"])
     #ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_stalk(50, cp.vl["TURN_SIGNAL"]["LEFT_TURN"],cp.vl["TURN_SIGNAL"]["RIGHT_TURN"])
 
-    ret.steeringTorque = cp.vl["EPS_03"]["STEER_TORQUE_DRIVER03"]
+    ret.steeringTorque = cp.vl["EPS_02"]["STEER_TORQUE_DRIVER02"]
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
     #if self.CP.enableAutoHold:
@@ -199,10 +201,11 @@ class CarState(CarStateBase):
 
     # cruise state
     ret.cruiseState.enabled = (cp.vl["CRUISE_CONTROL"]["CRUISE_ON"] == 1)
+    #ret.cruiseState.latActive = (cp.vl["CRUISE_CONTROL"]["ACC_RESUME_BTTN"] == 1)
     ret.cruiseState.available = (cp.vl["CR00"]["Cruise_ready"] != 0)
-    ret.cruiseState.standstill = False
-
+    #ret.cruiseState.available = (cp.vl["CRUISE_CONTROL"]["ACC_RESUME_BTTN"] == 1)
     ret.cruiseState.enabledAcc = ret.cruiseState.enabled
+    ret.cruiseState.standstill = False
 
     if ret.cruiseState.enabled:
       ret.cruiseState.speed = round(cp.vl["CRUISE_CONTROL"]['SPEED_CRUISE_RESUME']) * CV.KPH_TO_MS

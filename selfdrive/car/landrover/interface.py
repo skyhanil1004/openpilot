@@ -34,27 +34,32 @@ class CarInterface(CarInterfaceBase):
 
     ret.pcmCruise = not ret.openpilotLongitudinalControl
 
+    ret.longitudinalTuning.kpV = [0.0]
+    ret.longitudinalTuning.kiV = [0.0]
     # These cars have been put into dashcam only due to both a lack of users and test coverage.
     # These cars likely still work fine. Once a user confirms each car works and a test route is
     # added to selfdrive/test/test_routes, we can remove it from this list.
     ret.dashcamOnly = False #candidate in {CAR.KIA_OPTIMA_H, CAR.ELANTRA_GT_I30}
+    ret.maxSteeringAngleDeg = 1000.
 
-    ret.steerRatio = 12.5
-    ret.steerActuatorDelay = 0.011      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
-    #ret.steerRatio = 15.5
-    #ret.steerActuatorDelay = 0.02      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
+    #ret.steerRatio = 12.5
+    #ret.steerActuatorDelay = 0.011      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
+    ret.steerRatio = 15.5
+    ret.steerActuatorDelay = 0.02      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
+
+    ret.lateralTuning.init('pid')
     ret.lateralTuning.pid.kf = 0.00005   # full torque for 10 deg at 80mph means 0.00007818594
-
-
     ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
-    ret.longitudinalTuning.kpV = [0.0]
-    ret.longitudinalTuning.kiV = [0.0]
+    ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.00000001,0.00000001], [0.00000001,0.00000001]]
+    ret.lateralTuning.pid.kdBP, ret.lateralTuning.pid.kdV = [[0.], [0.00000001]]
 
     # PID
+    """
     ret.lateralTuning.pid.kf = 0.00005   # full torque for 10 deg at 80mph means 0.00007818594
 
     ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 20.], [9., 20.]]
     ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.01,0.02], [0.0005,0.001]]
+    """
 
     # LQR EQ9000
     """
