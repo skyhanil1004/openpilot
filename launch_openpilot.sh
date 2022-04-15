@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-#export FINGERPRINT="KIA CARNIVAL KA4 2022"
+#export FINGERPRINT="LANDROVER RangeRover Vogue 2017"
 
 
 export PASSIVE="0"

@@ -2,6 +2,7 @@ from cereal import car
 from selfdrive.car import dbc_dict
 Ecu = car.CarParams.Ecu
 
+STEER_THRESHOLD = 1023
 # Steer torque limits
 class CarControllerParams:
   ACCEL_MIN = -3.5 # m/s
@@ -48,5 +49,3 @@ DBC = {
     'landrover_rangerover_2017_vogue',  # 'pt'
    None),  # 'radar'
 }
-
-STEER_THRESHOLD = 1023

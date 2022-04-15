@@ -147,9 +147,10 @@ class CarState(CarStateBase):
     ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
     ret.standstill = not self.v_wheel > 0.001
 
-    ret.steeringRateDeg = cp.vl["EPS_01"]["STEER_SPEED01"]
     ret.steeringAngleDeg = cp.vl["EPS_01"]["STEER_ANGLE01"]
-    ret.steeringTorque = cp.vl["EPS_04"]["STEER_TQ"]
+    ret.steeringRateDeg = cp.vl["EPS_01"]["STEER_SPEED01"]
+    ret.steeringTorque = cp.vl["EPS_03"]["STEER_TORQUE_DRIVER03"]
+    ret.steeringTorqueEps = cp.vl["EPS_02"]["STEER_TORQUE_DRIVER02"] / 10.  # scale to Nm
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
     # HANIL for landrover steers rate
@@ -164,9 +165,6 @@ class CarState(CarStateBase):
 
     ret.steeringRateDeg *= self.angle_rate_multi
     """
-
-    ret.steeringTorque = cp.vl["EPS_03"]["STEER_TORQUE_DRIVER03"]
-    ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
     # self.steer_override = False # abs(self.steer_torque_driver) > STEER_THRESHOLD
     steer_state = 1 #cp.vl[""]["LKAS_STATE"]
