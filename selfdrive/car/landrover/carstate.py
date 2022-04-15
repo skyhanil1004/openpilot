@@ -150,7 +150,7 @@ class CarState(CarStateBase):
     ret.steeringAngleDeg = cp.vl["EPS_01"]["STEER_ANGLE01"]
     ret.steeringRateDeg = cp.vl["EPS_01"]["STEER_SPEED01"]
     ret.steeringTorque = cp.vl["EPS_03"]["STEER_TORQUE_DRIVER03"]
-    ret.steeringTorqueEps = cp.vl["EPS_02"]["STEER_TORQUE_DRIVER02"] / 10.  # scale to Nm
+    ret.steeringTorqueEps = cp.vl["EPS_02"]["STEER_TORQUE_MOTOR02"] / 10.  # scale to Nm
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
     # HANIL for landrover steers rate
