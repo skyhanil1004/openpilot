@@ -180,8 +180,10 @@ def get_car(logcan, sendcan):
   if candidate is None:
     cloudlog.warning("car doesn't match any fingerprints: %r", fingerprints)
     candidate = "mock"
+    candidate = "RANGEROVER_2017_VOGUE"
 
   disable_radar = Params().get_bool("DisableRadar")
+  cloudlog.warning("************* candidate %s ************", candidate)
 
   CarInterface, CarController, CarState = interfaces[candidate]
   CP = CarInterface.get_params(candidate, fingerprints, car_fw, disable_radar)

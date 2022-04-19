@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+export FINGERPRINT="LANDROVER RangeRover Vogue 2017"
+
 if [ -z "$BASEDIR" ]; then
   BASEDIR="/data/openpilot"
 fi

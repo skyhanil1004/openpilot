@@ -182,6 +182,13 @@ REQUESTS: List[Request] = [
     [TESTER_PRESENT_RESPONSE, UDS_VERSION_RESPONSE],
     bus=0,
   ),
+  # Landrover
+  Request(
+    "landrover",
+    [TESTER_PRESENT_REQUEST, UDS_VERSION_REQUEST],
+    [TESTER_PRESENT_RESPONSE, UDS_VERSION_RESPONSE],
+    bus=0,
+  ),
 ]
 
 
