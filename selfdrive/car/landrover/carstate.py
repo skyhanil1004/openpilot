@@ -11,7 +11,6 @@ from common.conversions import Conversions as CV
 class CarState(CarStateBase):
   def __init__(self, CP):
     super().__init__(CP)
-
     can_define = CANDefine(DBC[CP.carFingerprint]["pt"])
     self.shifter_values = can_define.dv["GEAR_PRND"]["GEAR_SHIFT"]
 
@@ -29,11 +28,18 @@ class CarState(CarStateBase):
     ret.brake = 0
     ret.gasPressed = ret.gas > 1e-3
 
-    ret.wheelSpeeds = (cp.vl["SPEED_01"]["SPEED01"] + cp.vl["SPEED_02"]["SPEED02"]) / 2.
+    #ret.wheelSpeeds = (cp.vl["SPEED_01"]["SPEED01"] + cp.vl["SPEED_02"]["SPEED02"]) / 2.
+    ret.wheelSpeeds = self.get_wheel_speeds(
+      cp.vl["SPEED_04"]["WHEEL_SPEED_FL"],
+      cp.vl["SPEED_04"]["WHEEL_SPEED_FR"],
+      cp.vl["SPEED_03"]["WHEEL_SPEED_RL"],
+      cp.vl["SPEED_03"]["WHEEL_SPEED_RR"],
+      unit=1,
+    )
 
     ret.vEgoRaw = (cp.vl["SPEED_01"]["SPEED01"] + cp.vl["SPEED_02"]["SPEED02"]) / 2.
     ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
-    ret.standstill = not self.vEgoRaw > 0.001
+    ret.standstill = not ret.vEgoRaw > 0.001
 
     ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["TURN_SIGNAL"]['LEFT_BLINK'],cp.vl["TURN_SIGNAL"]['RIGHT_BLINK'])
     ret.leftTurn, ret.rightTurn = self.update_blinker_from_lamp(50, cp.vl["TURN_SIGNAL"]['LEFT_TURN'],cp.vl["TURN_SIGNAL"]['RIGHT_TURN'])
@@ -81,11 +87,11 @@ class CarState(CarStateBase):
       ("LEFT_TURN", "TURN_SIGNAL", 0),
       ("LEFT_BLINK", "TURN_SIGNAL", 0),
       ("RIGHT_BLINK", "TURN_SIGNAL", 0),
-      ("COUNTER", "LKAS_RUN", -1),
       ("SPEED01", "SPEED_01", 0),
       ("SPEED02", "SPEED_02", 0),
-      ("LEFT_ALERT_1", "LEFT_ALERT", 0),
-      ("RIGHT_ALERT_1", "RIGHT_ALERT", 0),
+      #("LEFT_ALERT_1", "LEFT_ALERT", 0),
+      #("RIGHT_ALERT_1", "RIGHT_ALERT", 0),
+      ( "COUNTER", "LKAS_RUN", -1),
       ("WHEEL_SPEED_FR", "SPEED_04", 0),
       ("WHEEL_SPEED_FL", "SPEED_04", 0),
       ("WHEEL_SPEED_RR", "SPEED_03", 0),
@@ -114,6 +120,11 @@ class CarState(CarStateBase):
       ("LKAS_HUD_STAT", 0),
       ("HEAD_LIGHT", 0),
       ("LKAS_STATUS", 0),
+      ("GEAR_PRND", 100),
+      ("TURN_SIGNAL", 0),
+      ("SEAT_BELT", 100),
+      ("ACCELATOR_DRIVER", 0),
+      ( "LKAS_RUN", 0),
     ]
 
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 0)
@@ -131,6 +142,8 @@ class CarState(CarStateBase):
         ( "STEER_TORQ", "LKAS_RUN", 0),
         ( "LKAS_GREEN", "LKAS_RUN", 0),
       ]
-      checks = []
+      checks = [
+         ( "LKAS_RUN", 0),
+      ]
 
       return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2)

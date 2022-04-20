@@ -38,7 +38,7 @@ class CarController():
     self.CP = CP
     self.apply_steer_last = 0
     self.ccframe = 0
-    self.p = CarControllerParams(CP)
+    self.p = CarControllerParams
     self.prev_frame = -1
     self.hud_count = 0
     self.lkascnt = 0
@@ -48,8 +48,8 @@ class CarController():
 
     self.packer = CANPacker(dbc_name)
 
-  def update(self, enabled, CS, actuators, pcm_cancel_cmd, hud_alert):
-                              #  hud_speed,left_lane, right_lane, left_lane_depart, right_lane_depart):
+  def update(self, enabled, CS, actuators, pcm_cancel_cmd, hud_alert,
+               hud_speed,left_lane, right_lane, left_lane_depart, right_lane_depart):
     frame = CS.lkas_counter
     if self.prev_frame == frame:
       return car.CarControl.Actuators.new_message(), []

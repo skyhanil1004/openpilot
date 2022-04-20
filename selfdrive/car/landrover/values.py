@@ -5,17 +5,18 @@ Ecu = car.CarParams.Ecu
 STEER_THRESHOLD = 1023
 # Steer torque limits
 class CarControllerParams:
+  STEER_MAX = 1023
+  STEER_DELTA_UP = 5
+  STEER_DELTA_DOWN = 10
+  STEER_ERROR_MAX = 1023
+
   ACCEL_MIN = -3.5 # m/s
   ACCEL_MAX = 2.0 # m/s
 
-  def __init__(self, CP):
-    self.STEER_MAX = 1023
-    self.STEER_ERROR_MAX = 1023
-    self.STEER_DELTA_UP = 5
-    self.STEER_DELTA_DOWN = 10
-    self.STEER_DRIVER_ALLOWANCE = 50
-    self.STEER_DRIVER_MULTIPLIER = 2
-    self.STEER_DRIVER_FACTOR = 1
+#  def __init__(self, CP):
+  STEER_DRIVER_ALLOWANCE = 50
+  STEER_DRIVER_MULTIPLIER = 2
+  STEER_DRIVER_FACTOR = 1
 
 class CAR:
    RANGEROVER_2017_VOGUE = "LANDROVER RangeRover Vogue 2017"
