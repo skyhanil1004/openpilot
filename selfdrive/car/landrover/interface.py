@@ -33,8 +33,8 @@ class CarInterface(CarInterfaceBase):
     ret.dashcamOnly = False #candidate in {CAR.KIA_OPTIMA_H, CAR.ELANTRA_GT_I30}
 
     ret.steerRatio = 15.5
-    ret.steerActuatorDelay = 0.02      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
-    ret.lateralTuning.pid.kf = 0.00005   # full torque for 10 deg at 80mph means 0.00007818594
+    ret.steerActuatorDelay = 0.011      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
+    ret.lateralTuning.pid.kf = 0.00008   # full torque for 10 deg at 80mph means 0.00007818594
 
     ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 20.], [9., 20.]]
     ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.01,0.02], [0.0005,0.001]]

@@ -21,16 +21,16 @@ def get_can_parser_landrover(CP):
     ("CRUISE_ON", "CRUISE_CONTROL", 0),
     ("DRIVER_BRAKE", "CRUISE_CONTROL", 0),
     ("SPEED_CRUISE_RESUME", "CRUISE_CONTROL", 1),
-    ("ACCELATOR_DRIVER", "ACCELATOR_DRIVER", 0),
+    #("ACCELATOR_DRIVER", "ACCELATOR_DRIVER", 0),
     ("SEAT_BELT_DRIVER", "SEAT_BELT", 0),
     ("RIGHT_TURN", "TURN_SIGNAL", 0),
     ("LEFT_TURN", "TURN_SIGNAL", 0),
-    ("LEFT_RIGHT_BLINK", "TURN_SIGNAL", 0),
-    ("COUNTER", "LKAS_RUN", -1),
+    ("LEFT_BLINK", "TURN_SIGNAL", 0),
+    ("RIGHT_BLINK", "TURN_SIGNAL", 0),
     ("SPEED01", "SPEED_01", 0),
     ("SPEED02", "SPEED_02", 0),
-    ("LEFT_ALERT_1", "LEFT_ALERT", 0),
-    ("RIGHT_ALERT_1", "RIGHT_ALERT", 0),
+    #("LEFT_ALERT_1", "LEFT_ALERT", 0),
+    #("RIGHT_ALERT_1", "RIGHT_ALERT", 0),
     ("WHEEL_SPEED_FR", "SPEED_04", 0),
     ("WHEEL_SPEED_FL", "SPEED_04", 0),
     ("WHEEL_SPEED_RR", "SPEED_03", 0),
@@ -59,6 +59,7 @@ def get_can_parser_landrover(CP):
     ("LKAS_HUD_STAT", 0),
     ("HEAD_LIGHT", 0),
     ("LKAS_STATUS", 0),
+    ("TURN_SIGNAL", 0),
   ]
 
   return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 0)
@@ -67,16 +68,19 @@ def get_cam_can_parser_landrover(CP):
     signals = [
       # sig_name, sig_address, default
       # TODO read in all the other values
-      ( "ALLFFFF", "LKAS_RUN", 0),
-      ( "A1", "LKAS_RUN", 0),
-      ( "HIGH_TORQ", "LKAS_RUN", 0),
-      ( "ALL11", "LKAS_RUN", 0),
-      ( "COUNTER", "LKAS_RUN", -1),
-      ( "STEER_TORQ", "LKAS_RUN", 0),
-      ( "LKAS_GREEN", "LKAS_RUN", 0),
+      ("ALLFFFF", "LKAS_RUN", 0),
+      ("A1", "LKAS_RUN", 0),
+      ("HIGH_TORQ", "LKAS_RUN", 0),
+      ("ALL11", "LKAS_RUN", 0),
+      ("COUNTER", "LKAS_RUN", -1),
+      ("STEER_TORQ", "LKAS_RUN", 0),
+      ("LKAS_GREEN", "LKAS_RUN", 0),
     ]
 
-    checks = []
+    checks = [
+
+      ("LKAS_RUN", 0),
+    ]
 
     return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2)
 
@@ -107,8 +111,6 @@ class CarState(CarStateBase):
     self.right_alert = 0
 
     self.angle_steers = 0.0
-
-    self.shifter_values = can_define.dv["GEAR_PRND"]["GEAR_SHIFT"]
 
     self.brake_error = False
     self.park_brake = False
@@ -149,7 +151,7 @@ class CarState(CarStateBase):
 
     ret.steeringAngleDeg = cp.vl["EPS_01"]["STEER_ANGLE01"]
     ret.steeringRateDeg = cp.vl["EPS_01"]["STEER_SPEED01"]
-    ret.steeringTorque = cp.vl["EPS_03"]["STEER_TORQUE_DRIVER03"]
+    ret.steeringTorque = cp.vl["EPS_02"]["STEER_TORQUE_DRIVER02"]
     ret.steeringTorqueEps = cp.vl["EPS_02"]["STEER_TORQUE_MOTOR02"] / 10.  # scale to Nm
     ret.steeringPressed = abs(ret.steeringTorque) > STEER_THRESHOLD
 
@@ -171,7 +173,8 @@ class CarState(CarStateBase):
     self.steer_error = steer_state == 4 or (steer_state == 0 and self.v_ego > self.CP.minSteerSpeed)
 
 
-    ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["TURN_SIGNAL"]['LEFT_TURN'],cp.vl["TURN_SIGNAL"]['RIGHT_TURN'])
+    ret.leftTurn, ret.rightTurn = self.update_blinker_from_lamp(50, cp.vl["TURN_SIGNAL"]['LEFT_TURN'],cp.vl["TURN_SIGNAL"]['RIGHT_TURN'])
+    ret.leftBlinker, ret.rightBlinker = self.update_blinker_from_lamp(50, cp.vl["TURN_SIGNAL"]['LEFT_BLINK'],cp.vl["TURN_SIGNAL"]['RIGHT_BLINK'])
 
     ret.cruiseState.available = True
     ret.cruiseState.enabled = cp.vl["CRUISE_CONTROL"]["CRUISE_ON"] == 1

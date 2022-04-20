@@ -61,8 +61,7 @@ class CarController():
 
     # Steering Torque
     new_steer = int(round(actuators.steer * 1024))
-    #new_steer = int(round(actuators.steer * self.p.STEER_MAX))
-    #new_steer = int(round(actuators.steer * 150))
+
     #apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, self.p)
     apply_steer = apply_toyota_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, self.p)
     self.steer_rate_limited = new_steer != apply_steer
@@ -70,7 +69,7 @@ class CarController():
     # disable when temp fault is active, or below LKA minimum speed
     lkas_active = enabled and not CS.out.steerFaultTemporary and CS.out.vEgo >= CS.CP.minSteerSpeed
 
-    if not lkas_active:
+    if not lkas_active or CS.out.leftTurn or CS.out.rightTurn:
       apply_steer = 0
 
     self.apply_steer_last = apply_steer
