@@ -117,7 +117,7 @@ class CarState(CarStateBase):
       ("SPEED_04", 100),
       ("CRUISE_CONTROL", 100),
       ("SEAT_BELT", 100),
-      ("LKAS_HUD_STAT", 00),
+      ("LKAS_HUD_STAT", 10),
       ("HEAD_LIGHT", 100),
       ("LKAS_STATUS", 100),
       ("GEAR_PRND", 100),
@@ -143,7 +143,7 @@ class CarState(CarStateBase):
         ( "LKAS_GREEN", "LKAS_RUN"),
       ]
       checks = [
-         ( "LKAS_RUN", 1),
+         ( "LKAS_RUN", 0),
       ]
 
       return CANParser(DBC[CP.carFingerprint]["pt"], signals, checks, 2)
