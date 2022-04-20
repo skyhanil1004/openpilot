@@ -48,8 +48,8 @@ class CarController():
 
     self.packer = CANPacker(dbc_name)
 
-  def update(self, enabled, CS, actuators, pcm_cancel_cmd, hud_alert,
-               hud_speed,left_lane, right_lane, left_lane_depart, right_lane_depart):
+  def update(self, enabled, CS, actuators, pcm_cancel_cmd, hud_alert):
+               # hud_speed,left_lane, right_lane, left_lane_depart, right_lane_depart):
     frame = CS.lkas_counter
     if self.prev_frame == frame:
       return car.CarControl.Actuators.new_message(), []
@@ -77,11 +77,12 @@ class CarController():
     for (addr, ecu, cars, bus, fr_step, vl) in STATIC_MSGS:
        if(frame % fr_step == 0):  # 25 0.25s period
            can_sends.append([addr, bus, vl, 0])
-
+    """
     if (self.ccframe % 20 == 0):
        new_msg = create_lkas_hud(self.packer, CS.lkas_status, left_lane, right_lane, left_lane_depart, right_lane_depart )
        can_sends.append(new_msg)
        self.hud_count += 1
+    """
 
     if (self.ccframe % 2 == 0):
        new_msg = create_lkas_command(self.packer, CS.lkas_run, self.lkascnt, int(apply_steer))
