@@ -118,7 +118,8 @@ class CarInterfaceBase(ABC):
     ret = self._update(c)
 
     #ret.canValid = True # all(cp.can_valid for cp in self.can_parsers if cp is not None)
-    ret.canValid = all(cp.can_valid for cp in self.can_parsers if cp is not None)
+    #ret.canValid = all(cp.can_valid for cp in self.can_parsers if cp is not None)
+    ret.canValid = cp.can_valid # HANIL
     ret.canTimeout = any(cp.bus_timeout for cp in self.can_parsers if cp is not None)
 
     # copy back for next iteration
