@@ -1,7 +1,6 @@
 from cereal import car
 from common.realtime import DT_CTRL
 from common.numpy_fast import clip, interp
-#from selfdrive.config import Conversions as CV
 from common.conversions import Conversions as CV
 from selfdrive.car import apply_std_steer_torque_limits, apply_toyota_steer_torque_limits
 from selfdrive.car.landrover.landrovercan import create_lkas_command, create_lkas_hud
@@ -10,7 +9,6 @@ from opendbc.can.packer import CANPacker
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 LongCtrlState = car.CarControl.Actuators.LongControlState
-
 
 def process_hud_alert(enabled, fingerprint, visual_alert, left_lane,
                       right_lane, left_lane_depart, right_lane_depart):
@@ -37,35 +35,30 @@ def process_hud_alert(enabled, fingerprint, visual_alert, left_lane,
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
-    self.p = CarControllerParams(CP)
-    self.packer = CANPacker(dbc_name)
-
+    self.CP = CP
     self.apply_steer_last = 0
     self.ccframe = 0
-    self.CP = CP
-    self.steer_rate_limited = False
-    self.last_resume_frame = 0
-    self.accel = 0
-
-    self.controls_allowed = True
-    self.apply_steer_last = 0
-    self.lkascnt = 0
+    self.p = CarControllerParams(CP)
     self.prev_frame = -1
     self.hud_count = 0
-    self.alert_active = False
-    self.send_chime = False
+    self.lkascnt = 0
+    self.car_fingerprint = CP.carFingerprint
     self.gone_fast_yet = False
+    self.steer_rate_limited = False
 
+    self.packer = CANPacker(dbc_name)
 
-  def update(self, c, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert, hud_speed,
-             left_lane, right_lane, left_lane_depart, right_lane_depart):
+  def update(self, enabled, CS, actuators, pcm_cancel_cmd, hud_alert):
+                              #  hud_speed,left_lane, right_lane, left_lane_depart, right_lane_depart):
+    frame = CS.lkas_counter
+    if self.prev_frame == frame:
+      return car.CarControl.Actuators.new_message(), []
 
     # Steering Torque
     new_steer = int(round(actuators.steer * 1024))
-    #new_steer = int(round(actuators.steer * self.p.STEER_MAX))
-    #new_steer = int(round(actuators.steer * 150))
     #apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, self.p)
-    apply_steer = apply_toyota_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, self.p)
+    #apply_steer = apply_toyota_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, self.p)
+    apply_steer = apply_toyota_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorqueEps, CarControllerParams)
     self.steer_rate_limited = new_steer != apply_steer
 
     # disable when temp fault is active, or below LKA minimum speed
@@ -79,10 +72,6 @@ class CarController():
 
     self.apply_steer_last = apply_steer
 
-    #sys_warning, sys_state, left_lane_warning, right_lane_warning = \
-    #  process_hud_alert(enabled, self.CP.carFingerprint, visual_alert,
-    #                    left_lane, right_lane, left_lane_depart, right_lane_depart)
-
     can_sends = []
 
     for (addr, ecu, cars, bus, fr_step, vl) in STATIC_MSGS:
@@ -90,8 +79,9 @@ class CarController():
            can_sends.append([addr, bus, vl, 0])
 
     if (self.ccframe % 20 == 0):
-       can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, left_lane, right_lane, left_lane_depart, right_lane_depart ))
-       #can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, enabled, frame))
+       new_msg = create_lkas_hud(self.packer, CS.lkas_status, left_lane, right_lane, left_lane_depart, right_lane_depart )
+       can_sends.append(new_msg)
+       self.hud_count += 1
 
     if (self.ccframe % 2 == 0):
        new_msg = create_lkas_command(self.packer, CS.lkas_run, self.lkascnt, int(apply_steer))
@@ -103,6 +93,6 @@ class CarController():
     self.prev_frame = frame
 
     new_actuators = actuators.copy()
-    new_actuators.steer = apply_steer / self.p.STEER_MAX
+    new_actuators.steer = apply_steer / CarControllerParams.STEER_MAX
 
     return new_actuators, can_sends

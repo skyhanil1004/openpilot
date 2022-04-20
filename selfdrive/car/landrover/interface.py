@@ -2,7 +2,6 @@
 from cereal import car
 from panda import Panda
 from common.params import Params
-#from selfdrive.config import Conversions as CV
 from common.conversions import Conversions as CV
 from selfdrive.car.landrover.values import CAR, CarControllerParams
 #from selfdrive.car.landrover.radar_interface import RADAR_START_ADDR
@@ -11,26 +10,22 @@ from selfdrive.car.interfaces import CarInterfaceBase
 from selfdrive.car.disable_ecu import disable_ecu
 
 class CarInterface(CarInterfaceBase):
+  """
   @staticmethod
   def get_pid_accel_limits(CP, current_speed, cruise_speed):
     return CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX
+  """
 
   @staticmethod
-  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=[], disable_radar=False):  # pylint: disable=dangerous-default-value
+  def get_params(candidate, fingerprint=gen_empty_fingerprint(), car_fw=None, disable_radar=False):  # pylint: disable=dangerous-default-value
     ret = CarInterfaceBase.get_std_params(candidate, fingerprint)
-
     ret.carName = "landrover"
     ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.landrover, 0)]
     ret.radarOffCan = True #RADAR_START_ADDR not in fingerprint[1]
 
-    # WARNING: disabling radar also disables AEB (and we show the same warning on the instrument cluster as if you manually disabled AEB)
     ret.openpilotLongitudinalControl = False #Params().get_bool("DisableRadar") and (candidate not in LEGACY_SAFETY_MODE_CAR)
-
     ret.pcmCruise = not ret.openpilotLongitudinalControl
 
-    # These cars have been put into dashcam only due to both a lack of users and test coverage.
-    # These cars likely still work fine. Once a user confirms each car works and a test route is
-    # added to selfdrive/test/test_routes, we can remove it from this list.
     ret.dashcamOnly = False #candidate in {CAR.KIA_OPTIMA_H, CAR.ELANTRA_GT_I30}
 
     ret.steerRatio = 15.5
@@ -61,15 +56,43 @@ class CarInterface(CarInterfaceBase):
 
     # TODO: start from empirically derived lateral slip stiffness for the civic and scale by
     # mass and CG position, so all cars will have approximately similar dyn behaviors
-    ret.tireStiffnessFront, ret.tireStiffnessRear = scale_tire_stiffness(ret.mass, ret.wheelbase, ret.centerToFront,
-                                                                         tire_stiffness_factor=tire_stiffness_factor)
+    ret.tireStiffnessFront, ret.tireStiffnessRear = scale_tire_stiffness(ret.mass, ret.wheelbase, ret.centerToFront)
+                                                                         # tire_stiffness_factor=tire_stiffness_factor)
     return ret
 
+  def _update(self, c):
+    ret = self.CS.update(self.cp, self.cp_cam)
+
+    ret.steeringRateLimited = self.CC.steer_rate_limited if self.CC is not None else False
+
+    # events
+    events = self.create_common_events(ret, extra_gears=[car.CarState.GearShifter.low])
+
+    if ret.vEgo < self.CP.minSteerSpeed:
+      events.add(car.CarEvent.EventName.belowSteerSpeed)
+
+    ret.events = events.to_msg()
+
+    return ret
+
+  # pass in a car.CarControl
+  # to be called @ 100hz
+  def apply(self, c):
+
+    if (self.CS.frame == -1):
+      return car.CarControl.Actuators.new_message(), []  # if we haven't seen a frame 220, then do not update.
+
+    return self.CC.update(c.enabled, self.CS, c.actuators, c.cruiseControl.cancel, c.hudControl.visualAlert)
+
+  """
   @staticmethod
   def init(CP, logcan, sendcan):
     if CP.openpilotLongitudinalControl:
       disable_ecu(logcan, sendcan, addr=0x7d0, com_cont_req=b'\x28\x83\x01')
+  """
 
+
+  """
   def update(self, c, can_strings):
     self.cp.update_strings(can_strings)
     self.cp_cam.update_strings(can_strings)
@@ -129,7 +152,9 @@ class CarInterface(CarInterfaceBase):
 
     self.CS.out = ret.as_reader()
     return self.CS.out
+  """
 
+  """
   def apply(self, c):
     hud_control = c.hudControl
     ret = self.CC.update(c, c.enabled, self.CS, self.frame, c.actuators,
@@ -137,3 +162,4 @@ class CarInterface(CarInterfaceBase):
                          hud_control.rightLaneVisible, hud_control.leftLaneDepart, hud_control.rightLaneDepart)
     self.frame += 1
     return ret
+  """
