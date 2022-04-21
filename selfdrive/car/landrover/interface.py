@@ -20,7 +20,7 @@ class CarInterface(CarInterfaceBase):
 
     ret.carName = "landrover"
     ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.landrover, 0)]
-    ret.radarOffCan = True #RADAR_START_ADDR not in fingerprint[1]
+    ret.radarOffCan = True     #  RADAR_START_ADDR not in fingerprint[1]
 
     # WARNING: disabling radar also disables AEB (and we show the same warning on the instrument cluster as if you manually disabled AEB)
     ret.openpilotLongitudinalControl = False #Params().get_bool("DisableRadar") and (candidate not in LEGACY_SAFETY_MODE_CAR)
@@ -30,7 +30,8 @@ class CarInterface(CarInterfaceBase):
     # These cars have been put into dashcam only due to both a lack of users and test coverage.
     # These cars likely still work fine. Once a user confirms each car works and a test route is
     # added to selfdrive/test/test_routes, we can remove it from this list.
-    ret.dashcamOnly = False #candidate in {CAR.KIA_OPTIMA_H, CAR.ELANTRA_GT_I30}
+
+    ret.dashcamOnly = False
 
     ret.steerRatio = 15.5
     ret.steerActuatorDelay = 0.011      # 0.05 -> 0.065 12/11 modify org 0.1 -> 0.025 then good straight
