@@ -6,7 +6,6 @@ from opendbc.can.parser import CANParser
 from opendbc.can.can_define import CANDefine
 from selfdrive.config import Conversions as CV
 
-
 def get_can_parser_landrover(CP):
   signals = [
     # sig_name, sig_address, default
@@ -67,7 +66,6 @@ def get_can_parser_landrover(CP):
 def get_cam_can_parser_landrover(CP):
     signals = [
       # sig_name, sig_address, default
-      # TODO read in all the other values
       ("ALLFFFF", "LKAS_RUN", 0),
       ("A1", "LKAS_RUN", 0),
       ("HIGH_TORQ", "LKAS_RUN", 0),
@@ -76,9 +74,7 @@ def get_cam_can_parser_landrover(CP):
       ("STEER_TORQ", "LKAS_RUN", 0),
       ("LKAS_GREEN", "LKAS_RUN", 0),
     ]
-
     checks = [
-
       ("LKAS_RUN", 0),
     ]
 
@@ -96,7 +92,6 @@ def parse_gear_shifter(can_gear):
   elif can_gear == 0xbb:
     return "S"
   return "unknown"
-
 
 class CarState(CarStateBase):
   def __init__(self, CP):
@@ -128,7 +123,6 @@ class CarState(CarStateBase):
   @staticmethod
   def get_cam_can_parser(CP):
      return get_cam_can_parser_landrover(CP)
-
 
   def update(self, cp, cp_cam):
     ret = car.CarState.new_message()

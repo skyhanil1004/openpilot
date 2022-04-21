@@ -26,6 +26,7 @@ def create_lkas_hud(packer, lkas_status, left_line, right_line, left_lane_depart
 
   return packer.make_can_msg("LKAS_STATUS", 0, values)
 
+
 # LKAS_COMMAND 0x28F (655) Lane-keeping signal to turn the wheel.
 #def create_lkas_command(packer, lkas_run, apply_steer, moving_fast, frame):
 def create_lkas_command(packer, lkas_run, frame, apply_steer): #,

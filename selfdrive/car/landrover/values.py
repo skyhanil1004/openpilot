@@ -26,7 +26,6 @@ FINGERPRINTS = {
   }],
 }
 
-
 FW_VERSIONS = {
 }
 
@@ -42,7 +41,6 @@ STATIC_MSGS = [
 Ecu_FINGERPRINT = {
   Ecu.fwdCamera: 0x28f,   # steer torque cmd
 }
-
 
 DBC = {
   CAR.RANGEROVER_2017_VOGUE: dbc_dict(

@@ -10,7 +10,6 @@ from opendbc.can.packer import CANPacker
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 LongCtrlState = car.CarControl.Actuators.LongControlState
 
-
 def process_hud_alert(enabled, fingerprint, visual_alert, left_lane,
                       right_lane, left_lane_depart, right_lane_depart):
   sys_warning = (visual_alert in (VisualAlert.steerRequired, VisualAlert.ldw))
@@ -54,7 +53,6 @@ class CarController():
     self.alert_active = False
     self.send_chime = False
     self.gone_fast_yet = False
-
 
   def update(self, c, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert, hud_speed,
              left_lane, right_lane, left_lane_depart, right_lane_depart):
