@@ -10,10 +10,11 @@ import codecs
 # 35 left white, right green,
 
 def create_lkas_hud(packer, lkas_status, left_line, right_line, left_lane_depart, right_lane_depart):
-  #values = lkas_status
   values = {
-    "GREEN2WHITE_RIGHT": 2 if right_lane_depart else 1 if right_line else 3,
-    "GREEN2WHITE_LEFT": 2 if left_lane_depart else 1 if left_line else 3,
+    # "GREEN2WHITE_RIGHT": 2 if right_lane_depart else 1 if right_line else 3,
+    # "GREEN2WHITE_LEFT": 2 if left_lane_depart else 1 if left_line else 3,
+    "GREEN2WHITE_RIGHT": right_lane_depart,
+    "GREEN2WHITE_LEFT":  left_lane_depart,
     "NEW_41" : 0x41,
     "NEW_01" : 1,
     "NEW_0d" : 0xd,

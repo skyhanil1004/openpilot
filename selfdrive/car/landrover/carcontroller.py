@@ -14,6 +14,11 @@ def process_hud_alert(enabled, fingerprint, visual_alert, left_lane,
                       right_lane, left_lane_depart, right_lane_depart):
   sys_warning = (visual_alert in (VisualAlert.steerRequired, VisualAlert.ldw))
 
+  G2W_LEFT  = 2
+  G2W_RIGHT = 2
+  G2W_LEFT  if left_lane_depart else 1 if left_line else 3,
+  G2W_RIGHT if right_lane_depart else 1 if right_line else 3,
+
   # initialize to no line visible
   sys_state = 1
   if left_lane and right_lane or sys_warning:  # HUD alert only display when LKAS status is active
@@ -31,7 +36,7 @@ def process_hud_alert(enabled, fingerprint, visual_alert, left_lane,
   if right_lane_depart:
     right_lane_warning = 1 if fingerprint in (CAR.GENESIS_G90, CAR.GENESIS_G80) else 2
 
-  return sys_warning, sys_state, left_lane_warning, right_lane_warning
+  return sys_warning, sys_state, G2W_LEFT, G2W_RIGHT
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
@@ -72,9 +77,9 @@ class CarController():
 
     self.apply_steer_last = apply_steer
 
-    #sys_warning, sys_state, left_lane_warning, right_lane_warning = \
-    #  process_hud_alert(enabled, self.CP.carFingerprint, visual_alert,
-    #                    left_lane, right_lane, left_lane_depart, right_lane_depart)
+    sys_warning, sys_state, left_lane_warning, right_lane_warning = \
+      process_hud_alert(enabled, self.CP.carFingerprint, visual_alert,
+                        left_lane, right_lane, left_lane_depart, right_lane_depart)
 
     can_sends = []
 
@@ -83,8 +88,8 @@ class CarController():
            can_sends.append([addr, bus, vl, 0])
 
     if (self.ccframe % 20 == 0):
-       can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, left_lane, right_lane, left_lane_depart, right_lane_depart ))
-       #can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, enabled, frame))
+       can_sends.append(create_lkas_hud(self.packer, CS.lkas_status, left_lane_warning, right_lane_warning, left_lane_depart, right_lane_depart ))
+       #cloudlog.warning("CS,lkas_status [%d]   --  left_lane [%d]  --  right_lane [%d]  -- left_depart [%d] -- right_depart [%d] (%s)", CS.lkas_status, left_lane, right_lane, left_lane_depart, right_lane_depart)
 
     if (self.ccframe % 2 == 0):
        new_msg = create_lkas_command(self.packer, CS.lkas_run, self.lkascnt, int(apply_steer))
